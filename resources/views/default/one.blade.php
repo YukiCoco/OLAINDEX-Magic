@@ -1,7 +1,11 @@
 @extends('default.layouts.main')
 @section('title',setting('name','OLAINDEX'))
+@section('css')
+<link rel="stylesheet" href="{{asset('css/mod.css')}}">
+@stop
 @section('js')
     <script src="https://cdn.staticfile.org/marked/0.6.2/marked.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
     <script>
         $(function () {
             @if (!blank($head))
@@ -25,7 +29,36 @@
                 $("#dl").val(origin + url);
             });
         }
+        function getAllDLLinks() {
+            var links = "";
+            @foreach($items as $item)
+            @if(! \Illuminate\Support\Arr::has($item,'folder'))
+            links += "{{ route('download',\App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])) }}" + " \n ";
+            @endif
+            @endforeach
+            copyText(links, function () {
+                Swal({
+                    type: "success",
+                    text: "已复制到剪贴板！"
+                })
+             })
+        }
+        // 复制的方法
+        function copyText(text, callback){ // text: 要复制的内容， callback: 回调
+        var tag = document.createElement('input');
+        tag.setAttribute('id', 'cp_hgz_input');
+        tag.value = text;
+        document.getElementsByTagName('body')[0].appendChild(tag);
+        document.getElementById('cp_hgz_input').select();
+        document.execCommand('copy');
+        document.getElementById('cp_hgz_input').remove();
+        if(callback) {callback(text)}
+        }
 
+        // 点击按钮调用复制
+        document.getElementById('btn').onclick = function (){
+        copyText( '123456', function (){console.log('复制成功')})
+        }
         @auth
         function deleteItem($sign) {
             swal({
@@ -65,7 +98,6 @@
                         <a href="?orderBy=name,asc"><i class="fa fa-arrow-down"></i></a>
                     @else
                         <a href="?orderBy=name,desc"><i class="fa fa-arrow-up"></i></a>
-
                     @endif
                 </div>
                 <div class="col-sm-2 d-none d-md-block d-md-none">
@@ -88,147 +120,107 @@
                         @endif
                     </span>
                 </div>
-                <div class="col-4 col-sm-2">
-                    @if(auth()->user())
-                        <a class="pull-right dropdown-toggle btn btn-sm btn-primary" href="#" id="actionDropdownLink"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">操作</a>
-                        <div class="dropdown-menu" aria-labelledby="actionDropdownLink">
-                            @if (array_key_exists('README.md', $originItems))
-                                <a class="dropdown-item"
-                                   href="{{ route('admin.file.update',$originItems['README.md']['id']) }}"><i
-                                        class="fa fa-pencil-square-o"></i> 编辑 README</a>
-                            @else
-                                <a class="dropdown-item"
-                                   href="{{ route('admin.file.create',['name' => 'README', 'path' => encrypt($originPath)]) }}"><i
-                                        class="fa fa-plus-circle"></i> 添加
-                                    README</a>
-                            @endif
-                            @if (array_key_exists('HEAD.md', $originItems))
-                                <a class="dropdown-item"
-                                   href="{{ route('admin.file.update',$originItems['HEAD.md']['id']) }}"><i
-                                        class="fa fa-pencil-square-o"></i> 编辑 HEAD</a>
-
-                            @else
-                                <a class="dropdown-item"
-                                   href="{{ route('admin.file.create',['name' => 'HEAD', 'path' => encrypt($originPath)]) }}"><i
-                                        class="fa fa-plus-circle"></i> 添加
-                                    HEAD</a>
-                            @endif
-                            <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal"
-                               data-target="#newFolderModal"><i class="fa fa-plus-circle"></i> 新建目录</a>
-                            <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal"
-                               data-target="#directLinkModal"><i class="fa fa-link"></i> 导出直链</a>
-                        </div>
-                        <div class="modal fade" id="newFolderModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <form action="{{ route('admin.folder.create') }}" method="post">
-                                    @csrf
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title"><i class="fa fa-plus-circle"></i> 新建目录</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p class="text-danger">请确保目录名的唯一性，如果存在相同名称，服务器会自动选择新的名称。</p>
-                                            <p class="text-danger">文件夹名不能以点开始或结束，且不能包含以下任意字符: " * : <>? / \ |。</p>
-                                            <div class="form-group">
-                                                <input type="text" name="name" class="form-control" placeholder="请输入目录名"
-                                                       required>
-                                                <input type="hidden" name="path" value="{{ encrypt($originPath) }}">
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary">确定</button>
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="modal fade" id="directLinkModal" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
+                    <div class="col-4 col-sm-2">
+                    <a class="pull-right dropdown-toggle btn btn-sm btn-primary" href="#" id="actionDropdownLink" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">操作</a>
+                    <div class="dropdown-menu" aria-labelledby="actionDropdownLink">
+                        @if(auth()->user())
+                        @if (array_key_exists('README.md', $originItems))
+                        <a class="dropdown-item" href="{{ route('admin.file.update',$originItems['README.md']['id']) }}"><i
+                                class="fa fa-pencil-square-o"></i> 编辑 README</a>
+                        @else
+                        <a class="dropdown-item"
+                            href="{{ route('admin.file.create',['name' => 'README', 'path' => encrypt($originPath)]) }}"><i
+                                class="fa fa-plus-circle"></i> 添加 README</a>
+                        @endif
+                        @if (array_key_exists('HEAD.md', $originItems))
+                        <a class="dropdown-item" href="{{ route('admin.file.update',$originItems['HEAD.md']['id']) }}"><i
+                                class="fa fa-pencil-square-o"></i> 编辑 HEAD</a>
+                        @else
+                        <a class="dropdown-item"
+                            href="{{ route('admin.file.create',['name' => 'HEAD', 'path' => encrypt($originPath)]) }}"><i
+                                class="fa fa-plus-circle"></i> 添加 HEAD</a>
+                        @endif
+                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#newFolderModal"><i
+                                class="fa fa-plus-circle"></i> 新建目录</a>
+                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#directLinkModal"><i
+                                class="fa fa-link"></i> 导出直链</a>
+                        @endif
+                        @if (setting('export_download'))
+                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#directLinkModal"><i
+                            class="fa fa-link"></i> 导出直链</a>
+                        @endif
+                        <a class="dropdown-item" href="#" onclick="getAllDLLinks()"><i class="fa fa-clipboard"></i> 复制所有下载链接</a>
+                    </div>
+                    <div class="modal fade" id="newFolderModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <form action="{{ route('admin.folder.create') }}" method="post">
+                                @csrf
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title"><i class="fa fa-link"></i> 导出直链</h5>
+                                        <h5 class="modal-title"><i class="fa fa-plus-circle"></i> 新建目录</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <p class="text-danger">
-                                            链接将在 {{ setting('access_token_expires') }}
-                                            后失效</p>
-                                        <p><a href="javascript:void(0)"
-                                              style="text-decoration: none" data-toggle="tooltip"
-                                              data-placement="right" data-clipboard-target="#dl"
-                                              class="clipboard">点击复制</a></p>
-                                        <label for="dl"><textarea name="urls" id="dl" class="form-control" cols="60"
-                                                                  rows="15"></textarea></label>
-
+                                        <p class="text-danger">请确保目录名的唯一性，如果存在相同名称，服务器会自动选择新的名称。</p>
+                                        <p class="text-danger">文件夹名不能以点开始或结束，且不能包含以下任意字符: " * : <>? / \ |。</p>
+                                        <div class="form-group">
+                                            <input type="text" name="name" class="form-control" placeholder="请输入目录名" required>
+                                            <input type="hidden" name="path" value="{{ encrypt($originPath) }}">
+                                        </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" onclick="getDirect()" class="btn btn-primary">点击获取
-                                        </button>
+                                        <button type="submit" class="btn btn-primary">确定</button>
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
-                    @else
-                        @if (setting('export_download'))
-                            <a class="pull-right dropdown-toggle btn btn-sm btn-primary" href="#"
-                               id="actionDropdownLink"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">操作</a>
-                            <div class="dropdown-menu" aria-labelledby="actionDropdownLink">
-                                <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal"
-                                   data-target="#directLinkModal"><i class="fa fa-link"></i> 导出直链</a>
-                            </div>
-                            <div class="modal fade" id="directLinkModal" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title"><i class="fa fa-link"></i> 导出直链</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p class="text-danger">
-                                                链接将在 {{ setting('access_token_expires') }}
-                                                后失效</p>
-                                            <p><a href="javascript:void(0)"
-                                                  style="text-decoration: none" data-toggle="tooltip"
-                                                  data-placement="right" data-clipboard-target="#dl"
-                                                  class="clipboard">点击复制</a></p>
-                                            <label for="dl"><textarea name="urls" id="dl" class="form-control" cols="60"
-                                                                      rows="15"></textarea></label>
+                    </div>
+                    <div class="modal fade" id="directLinkModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title"><i class="fa fa-link"></i> 导出直链</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="text-danger">
+                                        链接将在 {{ setting('access_token_expires') }}
+                                        后失效</p>
+                                    <p><a href="javascript:void(0)" style="text-decoration: none" data-toggle="tooltip"
+                                            data-placement="right" data-clipboard-target="#dl" class="clipboard">点击复制</a></p>
+                                    <label for="dl"><textarea name="urls" id="dl" class="form-control" cols="60"
+                                            rows="15"></textarea></label>
 
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" onclick="getDirect()" class="btn btn-primary">点击获取
-                                            </button>
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
-                                            </button>
-                                        </div>
-                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" onclick="getDirect()" class="btn btn-primary">点击获取
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">取消
+                                    </button>
                                 </div>
                             </div>
-                        @else
-                            <span class="pull-right">操作</span>
-                        @endif
-                    @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="list-group item-list">
             @if(!blank($pathArray))
-                <li class="list-group-item list-group-item-action"><a
-                        href="{{ route('home',\App\Utils\Tool::encodeUrl(\App\Utils\Tool::getParentUrl($pathArray))) }}"><i
-                            class="fa fa-level-up"></i> 返回上一层</a></li>
+                <li class="list-group-item list-group-item-action">
+                    <div class="row">
+                        <div class="col-8 col-sm-6">
+                                <a href="{{ route('home',\App\Utils\Tool::encodeUrl(\App\Utils\Tool::getParentUrl($pathArray))) }}"><i
+                                    class="fa fa-level-up"></i> 返回上一层</a>
+                        </div>
+                    </div>
+                </li>
             @endif
             @foreach($items as $item)
                 <li class="list-group-item list-group-item-action">
