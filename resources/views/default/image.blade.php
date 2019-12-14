@@ -1,9 +1,9 @@
 @extends('default.layouts.main')
 @section('title','图床')
 @section('css')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/filepond@4.4.9/dist/filepond.min.css">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/filepond-plugin-image-preview@4.2.1/dist/filepond-plugin-image-preview.min.css">
+    <link rel="stylesheet" href="{{ asset('css/filepond.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('css/filepond-plugin-image-preview.min.css')}}">
+    <link rel="stylesheet" href="sweetalert2.min.css">
     <style>
         .link-container {
             margin-top: 15px;
@@ -19,13 +19,13 @@
     </style>
 @stop
 @section('js')
-    <script src="https://cdn.jsdelivr.net/npm/filepond@4.4.9/dist/filepond.min.js"></script>
+    <script src="{{ asset('js/filepond.min.js')}}"></script>
     <script
-        src="https://cdn.jsdelivr.net/npm/filepond-plugin-image-preview@4.2.1/dist/filepond-plugin-image-preview.min.js"></script>
+        src="{{ asset('js/filepond-plugin-image-preview.min.js')}}"></script>
     <script
-        src="https://cdn.jsdelivr.net/npm/filepond-plugin-file-validate-size@2.1.3/dist/filepond-plugin-file-validate-size.min.js"></script>
+        src="{{asset('js/filepond-plugin-file-validate-size.min.js')}}"></script>
     <script
-        src="https://cdn.jsdelivr.net/npm/filepond-plugin-file-validate-type@1.2.4/dist/filepond-plugin-file-validate-type.min.js"></script>
+        src="{{ asset('js/filepond-plugin-file-validate-type.min.js')}}"></script>
 
     <script>
         FilePond.registerPlugin(
@@ -50,12 +50,13 @@
                         console.log(res);
                         if (res.errno === 200) {
                             $('#showUrl').removeClass('invisible');
-                            $('#urlCode').append('<p>' + res.data.url + '</p>');
-                            $('#htmlCode').append('<p>&lt;img src=\'' + res.data.url + '\' alt=\'' + res.data.filename + '\' title=\'' + res.data.filename + '\' /&gt;' + '</p>');
-                            $('#bbCode').append('<p>[img]' + res.data.url + '[/img]' + '</p>');
-                            $('#markdown').append('<p>![' + res.data.filename + '](' + res.data.url + ')' + '</p>');
-                            $('#markdownLinks').append('<p>[![' + res.data.filename + '](' + res.data.url + ')]' + '(' + res.data.url + ')' + '</p>');
-                            $('#deleteCode').append('<p>' + res.data.delete + '</p>');
+                            $('#urlCode').prepend($('<p>' + res.data.url + '</p>').attr('data-section-type','urlCode'));
+                            //$('<a></a>').attr('href','#').attr('onclick','').attr('data-section-urlCode','').text('[点击复制]');
+                            $('#htmlCode').prepend($('<p>&lt;img src=\'' + res.data.url + '\' alt=\'' + res.data.filename + '\' title=\'' + res.data.filename + '\' /&gt;' + '</p>').attr('data-section-type','htmlCode'));
+                            $('#bbCode').prepend($('<p>[img]' + res.data.url + '[/img]' + '</p>').attr('data-section-type','bbCode'));
+                            $('#markdown').prepend($('<p>![' + res.data.filename + '](' + res.data.url + ')' + '</p>').attr('data-section-type','markdown'));
+                            $('#markdownLinks').prepend($('<p>[![' + res.data.filename + '](' + res.data.url + ')]' + '(' + res.data.url + ')' + '</p>').attr('data-section-type','markdownLinks'));
+                            $('#deleteCode').prepend($('<p>' + res.data.delete + '</p>').attr('data-section-type','urlCode'));
                         }
                         return response.key
                     },
@@ -84,6 +85,28 @@
         pond.on('removefile', (file) => {
             console.log('文件已删除', file);
         });
+
+        function onCopyBtnClicked(type) {
+            var text = $("[data-section-type$='" + type + "']").text();
+            copyText(text,function () {
+                Swal({
+                    type: "success",
+                    text: "已复制到剪贴板！"
+                })
+             });
+         }
+
+        // 复制的方法
+        function copyText(text, callback){ // text: 要复制的内容， callback: 回调
+        var tag = document.createElement('textarea');
+        tag.setAttribute('id', 'cp_hgz_input');
+        tag.value = text;
+        document.getElementsByTagName('body')[0].appendChild(tag);
+        document.getElementById('cp_hgz_input').select();
+        document.execCommand('copy');
+        document.getElementById('cp_hgz_input').remove();
+        if(callback) {callback(text)}
+        }
     </script>
 @stop
 @section('content')
@@ -122,22 +145,34 @@
         </ul>
         <div id="navTabContent" class="tab-content">
             <div class="tab-pane fade in active show" id="urlPanel">
-                <div class="link-container" id="urlCode"></div>
+                <div class="link-container" id="urlCode">
+                    <a onclick="onCopyBtnClicked('urlCode') " href="#">[复制内容]</a>
+                </div>
             </div>
             <div class="tab-pane fade" id="htmlPanel">
-                <div class="link-container" id="htmlCode"></div>
+                <div class="link-container" id="htmlCode">
+                    <a onclick="onCopyBtnClicked('htmlCode')" href="#">[复制内容]</a>
+                </div>
             </div>
             <div class="tab-pane fade" id="bbPanel">
-                <div class="link-container" id="bbCode"></div>
+                <div class="link-container" id="bbCode">
+                    <a onclick="onCopyBtnClicked('bbCode')" href="#">[复制内容]</a>
+                </div>
             </div>
             <div class="tab-pane fade" id="markdownPanel">
-                <div class="link-container" id="markdown"></div>
+                <div class="link-container" id="markdown">
+                    <a onclick="onCopyBtnClicked('markdown')" href="#">[复制内容]</a>
+                </div>
             </div>
             <div class="tab-pane fade" id="markdownLinkPanel">
-                <div class="link-container" id="markdownLinks"></div>
+                <div class="link-container" id="markdownLinks">
+                    <a onclick="onCopyBtnClicked('markdownLinks')" href="#">[复制内容]</a>
+                </div>
             </div>
             <div class="tab-pane fade" id="deletePanel">
-                <div class="link-container" id="deleteCode"></div>
+                <div class="link-container" id="deleteCode">
+                    <a onclick="onCopyBtnClicked('deleteCode')" href="#">[复制内容]</a>
+                </div>
             </div>
         </div>
     </div>
