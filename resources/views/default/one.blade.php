@@ -33,7 +33,7 @@
             var links = "";
             @foreach($items as $item)
             @if(! \Illuminate\Support\Arr::has($item,'folder'))
-            links += "{{ route('download',\App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])) }}" + " \n ";
+            links += "{{ route('download',\App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])) }}" +'\r\n';
             @endif
             @endforeach
             copyText(links, function () {
@@ -45,7 +45,7 @@
         }
         // 复制的方法
         function copyText(text, callback){ // text: 要复制的内容， callback: 回调
-        var tag = document.createElement('input');
+        var tag = document.createElement('textarea');
         tag.setAttribute('id', 'cp_hgz_input');
         tag.value = text;
         document.getElementsByTagName('body')[0].appendChild(tag);
