@@ -3,7 +3,7 @@
 @section('css')
     <link rel="stylesheet" href="{{ asset('css/filepond.min.css')}}">
     <link rel="stylesheet" href="{{ asset('css/filepond-plugin-image-preview.min.css')}}">
-    <link rel="stylesheet" href="sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/limonte-sweetalert2/7.33.1/sweetalert2.min.css">
     <style>
         .link-container {
             margin-top: 15px;
@@ -44,7 +44,7 @@
                     method: 'POST',
                     withCredentials: false,
                     headers: {},
-                    timeout: 5000,
+                    timeout: 20000,
                     onload: (response) => {
                         let res = JSON.parse(response);
                         console.log(res);
@@ -56,7 +56,7 @@
                             $('#bbCode').prepend($('<p>[img]' + res.data.url + '[/img]' + '</p>').attr('data-section-type','bbCode'));
                             $('#markdown').prepend($('<p>![' + res.data.filename + '](' + res.data.url + ')' + '</p>').attr('data-section-type','markdown'));
                             $('#markdownLinks').prepend($('<p>[![' + res.data.filename + '](' + res.data.url + ')]' + '(' + res.data.url + ')' + '</p>').attr('data-section-type','markdownLinks'));
-                            $('#deleteCode').prepend($('<p>' + res.data.delete + '</p>').attr('data-section-type','urlCode'));
+                            $('#deleteCode').prepend($('<p>' + res.data.delete + '</p>').attr('data-section-type','deleteCode'));
                         }
                         return response.key
                     },
@@ -77,7 +77,11 @@
         });
         pond.on('processfile', (error, file) => {
             if (error) {
-                console.log('上传出错了');
+                Swal({
+                    type: "error",
+                    title: "出现错误",
+                    text: error.message
+                })
                 return;
             }
             console.log('文件已上传', file);
@@ -87,7 +91,16 @@
         });
 
         function onCopyBtnClicked(type) {
-            var text = $("[data-section-type$='" + type + "']").text();
+            var eles = $("[data-section-type$='" + type + "']");
+            var text = "";
+            if(eles.length > 1){
+                for (let index = 0; index < eles.length; index++) {
+                    const element = eles[index];
+                    text += $(element).text() + "\r\n";
+                }
+            } else{
+                text += eles.text();
+            }
             copyText(text,function () {
                 Swal({
                     type: "success",

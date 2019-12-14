@@ -5,7 +5,6 @@
 @stop
 @section('js')
     <script src="https://cdn.staticfile.org/marked/0.6.2/marked.min.js"></script>
-    <link rel="stylesheet" href="sweetalert2.min.css">
     <script>
         $(function () {
             @if (!blank($head))
