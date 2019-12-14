@@ -5,7 +5,7 @@
 # /public/favicon.ico
 /vendor
 # /.idea
-# /.vscode
+/.vscode
 # /.vagrant
 # Homestead.json
 # Homestead.yaml
