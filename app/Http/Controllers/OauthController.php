@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Utils\Tool;
 use App\Models\Setting;
+use App\Models\OnedriveAccount;
 use App\Service\Authorize;
+use App\Service\OneDrive;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Http\RedirectResponse;
@@ -40,9 +42,9 @@ class OauthController extends Controller
     public function oauth(Request $request)
     {
         // 检测是否已授权
-        if (Tool::hasBind()) {
-            return redirect()->route('home');
-        }
+        // if (Tool::hasBind()) {
+        //     return redirect()->route('home');
+        // }
         if ($request->isMethod('get')) {
             if (!$request->has('code')) {
                 return $this->authorizeLogin(request()->getHttpHost());
@@ -69,10 +71,19 @@ class OauthController extends Controller
                 'access_token' => $access_token,
                 'refresh_token' => $refresh_token,
                 'access_token_expires' => $expires,
+                'client_id' => session('client_id'),
+                'client_secret' => session('client_secret'),
+                'redirect_uri' => session('redirect_uri'),
+                'account_type' => session('account_type')
             ];
-            Setting::batchUpdate($data);
-            Tool::refreshAccount(one_account());
-
+            //Setting::batchUpdate($data);
+            //session($data);
+            $account = collect([
+                'account_type' => session('account_type'),
+                'access_token' => $access_token,
+            ]);
+            OnedriveAccount::firstOrCreate($data);
+            Tool::refreshAccount($account);
             return redirect()->route('home');
         }
         Tool::showMessage('Invalid Request', false);
@@ -81,7 +92,7 @@ class OauthController extends Controller
     }
 
     /**
-     * @param string $url
+     * @param string $url oahth Url
      * @return RedirectResponse
      */
     public function authorizeLogin($url = ''): RedirectResponse
@@ -90,7 +101,8 @@ class OauthController extends Controller
         // $state = str_random(32);
         $state = urlencode($url ? 'http://' . $url : config('app.url')); // 添加中转
         Session::put('state', $state);
-        $authorizationUrl = Authorize::getInstance(setting('account_type'))->getAuthorizeUrl($state);
+        //$authorizationUrl = Authorize::getInstance(setting('account_type'))->getAuthorizeUrl($state);
+        $authorizationUrl = Authorize::getInstance(session('account_type','com'))->getAuthorizeUrl($state);
 
         return redirect()->away($authorizationUrl);
     }

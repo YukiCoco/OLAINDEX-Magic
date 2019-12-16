@@ -116,7 +116,7 @@ if (!$showOriginPath) {
         ->where('query', '.*') //正则约束
         ->name('show');
     //展示
-    Route::get('show/{oneIndex}/{query}', 'IndexController@show')
+    Route::get('{oneIndex}/show/{query}', 'IndexController@show')
     ->where('query', '.*') //正则约束
     ->name('show');
     // 下载

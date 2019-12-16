@@ -3,6 +3,7 @@
 
 namespace App\Utils;
 
+use App\Models\OnedriveAccount;
 use App\Models\Setting;
 use App\Service\CoreConstants;
 use App\Service\OneDrive;
@@ -330,7 +331,9 @@ class Tool
                 'account_state' => '账号异常',
             ];
         }
-        Setting::batchUpdate($data);
+        //Setting::batchUpdate($data);
+        OnedriveAccount::where('access_token',Arr::get($account,'access_token'))
+                         ->update($data);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\OauthController;
 use App\Models\Setting;
+use App\Models\OnedriveAccount;
 use App\Service\OneDrive;
 use App\Utils\Tool;
 
@@ -45,7 +46,6 @@ if (!function_exists('setting')) {
     }
 }
 
-
 if (!function_exists('one_account')) {
 
     /**
@@ -61,6 +61,27 @@ if (!function_exists('one_account')) {
             'account_type' => setting('account_type'),
             'access_token' => setting('access_token'),
             'account_email' => setting('account_email'),
+        ]);
+        return $key ? $account->get($key, '') : $account->toArray();
+    }
+}
+
+if(!function_exists('getOnedriveAccount')){
+    /**
+     * @description:
+     * @param int $index 数据库中id
+     * @param string $key
+     * @return:
+     */
+    function getOnedriveAccount($index = 0,$key = ''){
+        $accounts = \Cache::remember('onedrive_account', 60*60,function () {
+            return OnedriveAccount::all();
+        });
+        $account = collect([
+            //从缓存中取出
+            'account_type' => $accounts[$index]['account_type'],
+            'access_token' => $accounts[$index]['access_token'],
+            'account_email' => $accounts[$index]['account_email'],
         ]);
         return $key ? $account->get($key, '') : $account->toArray();
     }

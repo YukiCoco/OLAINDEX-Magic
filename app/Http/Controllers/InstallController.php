@@ -87,8 +87,8 @@ class InstallController extends Controller
             'redirect_uri' => $redirect_uri,
             'account_type' => $account_type,
         ];
-        Setting::batchUpdate($data);
-
+        //Setting::batchUpdate($data);
+        session($data);
         return redirect()->route('bind');
     }
 

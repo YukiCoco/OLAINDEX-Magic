@@ -233,7 +233,7 @@ class IndexController extends Controller
      *
      * @return mixed
      */
-    public function getFileOrCache($realPath)
+    public function getFileOrCache($realPath,$oneIndex = 1)
     {
         $absolutePath = Tool::getAbsolutePath($realPath);
         $absolutePathArr = explode('/', $absolutePath);
@@ -244,6 +244,7 @@ class IndexController extends Controller
         $absolutePath = implode('/', $absolutePathArr);
         $listPath = Tool::getOriginPath($absolutePath);
         $list = Cache::get('one:list:' . $listPath, '');
+        //返回目录
         if ($list && array_key_exists($name, $list)) {
             return $list[$name];
         }

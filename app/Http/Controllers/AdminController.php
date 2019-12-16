@@ -177,6 +177,22 @@ class AdminController extends Controller
     }
 
     public function createBind(Request $request){
-
+        $client_id = $request->get('client_id');
+        $client_secret = $request->get('client_secret');
+        $redirect_uri = $request->get('redirect_uri');
+        $account_type = $request->get('account_type');
+        if (empty($client_id) || empty($client_secret) || empty($redirect_uri)) {
+            Tool::showMessage('参数请填写完整', false);
+            return redirect()->back();
+        }
+        // 写入配置
+        $data = [
+            'client_id' => $client_id,
+            'client_secret' => $client_secret,
+            'redirect_uri' => $redirect_uri,
+            'account_type' => $account_type,
+        ];
+        session($data);
+        return redirect()->route('oauth');
     }
 }

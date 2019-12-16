@@ -86,7 +86,7 @@ class Authorize
      */
     public function getAuthorizeUrl($state = ''): string
     {
-        $client_config = new ClientConfigEntity(CoreConstants::getClientConfig($this->account_type));
+        $client_config = new ClientConfigEntity(CoreConstants::getTmpConfig($this->account_type));
 
         $values = [
             'client_id' => $client_config->client_id,
