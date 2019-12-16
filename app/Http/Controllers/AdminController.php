@@ -171,4 +171,12 @@ class AdminController extends Controller
 
         return redirect()->route('bind');
     }
+
+    public function newBind(){
+        return view(config('olaindex.theme') . 'admin.newdrive');
+    }
+
+    public function createBind(Request $request){
+
+    }
 }

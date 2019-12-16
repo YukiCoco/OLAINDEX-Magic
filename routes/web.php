@@ -53,6 +53,8 @@ Route::prefix('admin')->group(static function () {
     Route::any('profile', 'AdminController@profile')->name('admin.profile');
     Route::any('clear', 'AdminController@clear')->name('admin.cache.clear');
     Route::any('refresh', 'AdminController@refresh')->name('admin.cache.refresh');
+    Route::get('newbind', 'AdminController@newBind')->name('admin.bind.newbind');
+    Route::post('newbind', 'AdminController@createBind')->name('admin.bind.createNewbind');
 
     // 文件夹操作
     Route::prefix('folder')->group(static function () {

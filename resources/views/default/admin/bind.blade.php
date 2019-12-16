@@ -8,6 +8,7 @@
             <input type="text" class="form-control" id="email" name="email"
                    value="{{ setting('account_email') }}" disabled>
         </div>
-        <button type="submit" class="btn btn-primary">解绑/绑定账户</button>
+        <button type="submit" class="btn btn-primary">解绑账户</button>
+        <button type="button"class="btn btn-secondary">绑定新账户</button>
     </form>
 @stop
