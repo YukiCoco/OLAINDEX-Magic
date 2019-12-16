@@ -29,7 +29,6 @@ if (!function_exists('setting')) {
     function setting($key = '', $default = '')
     {
         $setting = \Cache::remember('setting', 60 * 60, static function () {
-
             try {
                 $setting = Setting::all()->toArray();
             } catch (Exception $e) {
@@ -58,6 +57,7 @@ if (!function_exists('one_account')) {
     function one_account($key = '')
     {
         $account = collect([
+            //从缓存中取出
             'account_type' => setting('account_type'),
             'access_token' => setting('access_token'),
             'account_email' => setting('account_email'),

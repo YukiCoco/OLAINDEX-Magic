@@ -275,6 +275,8 @@ class IndexController extends Controller
      */
     public function show(Request $request)
     {
+        $oneIndex = $request->route()->parameter('oneIndex','1');
+
         $requestPath = $request->route()->parameter('query', '/');
         if ($requestPath === '/') {
             return redirect()->route('home');
