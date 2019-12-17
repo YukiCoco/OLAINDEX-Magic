@@ -98,7 +98,7 @@
             <p>{{ session()->pull('alertMessage') }}</p>
         </div>
     @endif
-    <div class="bg-white">
+    {{-- <div class="bg-white">
         <p class="text-center text-muted">{{ one_account('account_email') }}</p>
         <p class="text-center">
             <span class="text-info">状态: {{ one_info('state') }} &nbsp;&nbsp;</span>
@@ -106,7 +106,7 @@
             <span class="text-warning">剩余: {{ one_info('remaining') }} &nbsp;&nbsp;</span>
             <span class="text-success">全部: {{ one_info('total') }} &nbsp;&nbsp;</span>
         </p>
-    </div>
+    </div> --}}
     <div class="card border-light mb-3">
         <div class="card-header">
             @yield('title')

@@ -69,13 +69,14 @@ EOF;
         return $config[$account_type];
     }
 
-    public static function getClientConfig(string $account_type = 'com',$index = 0)
+    public static function getClientConfig(string $account_type = 'com',$index = 1)
     {
+        $account = OnedriveAccount::where('id',$index)->first();
         $config = [
             self::ACCOUNT_COM => [
-                'client_id' => setting('client_id'),
-                'client_secret' => setting('client_secret'),
-                'redirect_uri' => setting('redirect_uri', self::DEFAULT_REDIRECT_URI),
+                'client_id' => $account->client_id,
+                'client_secret' => $account->client_secret,
+                'redirect_uri' => $account->redirect_uri,
                 'authorize_url' => self::AUTHORITY_URL,
                 'authorize_endpoint' => self::AUTHORIZE_ENDPOINT,
                 'token_endpoint' => self::TOKEN_ENDPOINT,
@@ -84,9 +85,9 @@ EOF;
                 'scopes' => self::SCOPES
             ],
             self::ACCOUNT_CN => [
-                'client_id' => setting('client_id'),
-                'client_secret' => setting('client_secret'),
-                'redirect_uri' => setting('redirect_uri', self::DEFAULT_REDIRECT_URI),
+                'client_id' => $account->client_id,
+                'client_secret' => $account->client_secret,
+                'redirect_uri' => $account->redirect_uri,
                 'authorize_url' => self::AUTHORITY_URL_21V,
                 'authorize_endpoint' => self::AUTHORIZE_ENDPOINT_21V,
                 'token_endpoint' => self::TOKEN_ENDPOINT_21V,

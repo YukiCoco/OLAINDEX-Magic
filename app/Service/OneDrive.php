@@ -6,6 +6,9 @@ use App\Entities\ClientConfigEntity;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use ErrorException;
+use Illuminate\Support\Facades\Log;
+
+use function Psy\debug;
 
 /**
  * Class OneDrive
@@ -53,6 +56,9 @@ class OneDrive
         $baseUrl = $clientConfig->graph_endpoint;
         $apiVersion = $clientConfig->api_version;
         $accessToken = Arr::get($account, 'access_token', '');
+        Log::debug($accessToken);
+        Log::debug($baseUrl);
+        Log::debug($apiVersion);
         $this->graph = (new GraphRequest())
             ->setAccessToken($accessToken)
             ->setBaseUrl($baseUrl)

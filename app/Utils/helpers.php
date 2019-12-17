@@ -71,18 +71,14 @@ if(!function_exists('getOnedriveAccount')){
      * @description:
      * @param int $index 数据库中id
      * @param string $key
-     * @return:
+     * @return: array
      */
-    function getOnedriveAccount($index = 0,$key = ''){
+    function getOnedriveAccount($id = 1,$key = ''){
         $accounts = \Cache::remember('onedrive_account', 60*60,function () {
             return OnedriveAccount::all();
         });
-        $account = collect([
-            //从缓存中取出
-            'account_type' => $accounts[$index]['account_type'],
-            'access_token' => $accounts[$index]['access_token'],
-            'account_email' => $accounts[$index]['account_email'],
-        ]);
+        $account = $accounts->where('id',$id)->first();
+        Log::debug($account);
         return $key ? $account->get($key, '') : $account->toArray();
     }
 }
@@ -98,6 +94,7 @@ if (!function_exists('one_info')) {
      */
     function one_info($key = '')
     {
+        return [];
         if (refresh_token()) {
             $quota = Cache::remember(
                 'one:quota',
@@ -137,7 +134,7 @@ if (!function_exists('refresh_token')) {
         $hasExpired = $expires - time() <= 0;
         if ($hasExpired) {
             $oauth = new OauthController();
-            $res = json_decode($oauth->refreshToken(false), true);
+            $res = json_decode($oauth->refreshToken(false,getOnedriveAccount(1)), true);
 
             return $res['code'] === 200;
         }

@@ -6,6 +6,7 @@ use App\Utils\Tool;
 use App\Http\Controllers\OauthController;
 use Closure;
 use Session;
+use App\Models\OnedriveAccount;
 
 class VerifyAccessToken
 {
@@ -23,17 +24,18 @@ class VerifyAccessToken
 
             return redirect()->route('bind');
         }
-        $expires = setting('access_token_expires', 0);
-        $expires = strtotime($expires);
-        $hasExpired = $expires - time() <= 0;
-        if ($hasExpired) {
-            $current = url()->current();
-            Session::put('refresh_redirect', $current);
-            $oauth = new OauthController();
-
-            return $oauth->refreshToken();
+        $onedriveAccounts = OnedriveAccount::all();
+        foreach ($onedriveAccounts as $account) {
+            $expires = $account->access_token_expires;
+            $expires = strtotime($expires);
+            $hasExpired = $expires - time() <= 0;
+            if ($hasExpired) {
+                $current = url()->current();
+                Session::put('refresh_redirect', $current);
+                $oauth = new OauthController();
+                return $oauth->refreshToken(true,$account);
+            }
         }
-
         return $next($request);
     }
 }

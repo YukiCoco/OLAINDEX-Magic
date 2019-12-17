@@ -302,7 +302,6 @@ class Tool
                 $absolutes[] = $part;
             }
         }
-
         return str_replace('//', '/', '/' . implode('/', $absolutes) . '/');
     }
 
@@ -314,6 +313,7 @@ class Tool
     public static function refreshAccount($account): void
     {
         $response = OneDrive::getInstance($account)->getAccountInfo();
+        $data = [];
         if ($response['errno'] === 0) {
             $extend = Arr::get($response, 'data');
             $account_email = $response['errno'] === 0 ? Arr::get($extend, 'userPrincipalName') : '';
@@ -324,16 +324,15 @@ class Tool
             $resp = OneDrive::getInstance($account)->getDriveInfo();
             if ($resp['errno'] === 0) {
                 $extend = Arr::get($resp, 'data');
-                $data['account_extend'] = $extend;
+                $data['account_extend'] = collect($extend); //这是一个坑
+                Log::debug($extend);
             }
         } else {
             $data = [
                 'account_state' => '账号异常',
             ];
         }
-        //Setting::batchUpdate($data);
-        OnedriveAccount::where('access_token',Arr::get($account,'access_token'))
-                         ->update($data);
+        OnedriveAccount::where('access_token',Arr::get($account,'access_token'))->update($data);
     }
 
     /**

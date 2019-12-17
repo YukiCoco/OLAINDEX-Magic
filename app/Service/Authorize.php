@@ -48,7 +48,7 @@ class Authorize
      */
     private function request($form_params): Collection
     {
-        $client_config = new ClientConfigEntity(CoreConstants::getClientConfig($this->account_type));
+        $client_config = new ClientConfigEntity(CoreConstants::getTmpConfig($this->account_type));
         $form_params = array_merge([
             'client_id' => $client_config->client_id,
             'client_secret' => $client_config->client_secret,
@@ -73,7 +73,6 @@ class Authorize
             Log::error('OneDrive Authorize Request Error.', $error);
             $message = $curl->errorCode . ': ' . $curl->errorMessage . "\n";
             throw new ErrorException($message);
-
         }
         return collect($curl->response);
     }

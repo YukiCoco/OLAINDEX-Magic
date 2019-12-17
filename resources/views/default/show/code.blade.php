@@ -24,7 +24,7 @@
             </div>
 
             <br>
-            <div class="text-center"><a href="{{ route('download',\App\Utils\Tool::encodeUrl($originPath)) }}"
+            <div class="text-center"><a href="{{ route('download',['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl($originPath)]) }}"
                                         class="btn btn-success"><i class="fa fa-download"></i> 下载</a></div>
         </div>
     </div>

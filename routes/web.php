@@ -108,23 +108,23 @@ if (!$showOriginPath) {
 
     //列表
     Route::prefix('home')->group(static function () {
-        Route::get('{query?}', 'IndexController@list')->where('query', '.*')->name('home');
+        Route::get('{clientId?}/{query?}', 'IndexController@list')->where('query', '.*')->name('home');
     });
 
     //展示
-    Route::get('show/{query}', 'IndexController@show')
+    Route::get('show/{clientId?}/{query}', 'IndexController@show')
         ->where('query', '.*') //正则约束
         ->name('show');
     //展示
-    Route::get('{oneIndex}/show/{query}', 'IndexController@show')
-    ->where('query', '.*') //正则约束
-    ->name('show');
+    // Route::get('{oneIndex}/show/{query}', 'IndexController@show')
+    // ->where('query', '.*') //正则约束
+    // ->name('show');
     // 下载
-    Route::get('down/{query}', 'IndexController@download')
+    Route::get('down/{clientId?}/{query}', 'IndexController@download')
         ->where('query', '.*')
         ->name('download');
     //看图
-    Route::get('view/{query}', 'IndexController@download')
+    Route::get('view/{clientId?}/{query}', 'IndexController@download')
         ->where('query', '.*')
         ->name('view');
 } else {

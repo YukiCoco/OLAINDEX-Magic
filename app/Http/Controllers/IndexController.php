@@ -55,8 +55,6 @@ class IndexController extends Controller
         $this->middleware('handle.encrypt')->only(setting('encrypt_option', ['list']));
         $this->middleware('hotlink.protection')->only(['show', 'download', 'thumb', 'thumbCrop']);
         $this->middleware('throttle:' . setting('search_throttle'))->only(['search', 'searchShow']);
-
-
         $this->expires = setting('expires', 1200);
         $this->root = setting('root', '/');
         $this->show = [
@@ -94,6 +92,7 @@ class IndexController extends Controller
      */
     public function list(Request $request)
     {
+        $clientId = $request->route()->parameter('clientId', 1);
         // 处理路径
         $requestPath = $request->route()->parameter('query', '/');
         $graphPath = Tool::getOriginPath($requestPath);
@@ -102,11 +101,11 @@ class IndexController extends Controller
         $pathArray = $originPath ? explode('/', $originPath) : [];
 
         // 获取资源缓存
-        $pathKey = 'one:path:' . $graphPath;
+        $pathKey = 'one:' . (string)$clientId . ':path:' . $graphPath;
         if (Cache::has($pathKey)) {
             $item = Cache::get($pathKey);
         } else {
-            $response = OneDrive::getInstance(one_account())->getItemByPath($graphPath);
+            $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getItemByPath($graphPath);
             if ($response['errno'] === 0) {
                 $item = $response['data'];
                 if (!Arr::has($item, 'folder')) {
@@ -115,10 +114,10 @@ class IndexController extends Controller
                 Cache::put($pathKey, $item, $this->expires);
             } else {
                 Tool::showMessage($response['msg'], false);
-
                 return view(config('olaindex.theme') . 'message');
             }
         }
+        //直接下载
         if (Arr::has($item, '@microsoft.graph.downloadUrl')) {
             return redirect()->away($item['@microsoft.graph.downloadUrl']);
         }
@@ -127,7 +126,7 @@ class IndexController extends Controller
         if (Cache::has($key)) {
             $originItems = Cache::get($key);
         } else {
-            $response = OneDrive::getInstance(one_account())->getItemListByPath(
+            $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getItemListByPath(
                 $graphPath,
                 '?select=id,eTag,name,size,lastModifiedDateTime,file,image,folder,'
                 . 'parentReference,@microsoft.graph.downloadUrl&expand=thumbnails'
@@ -138,7 +137,6 @@ class IndexController extends Controller
                 Cache::put($key, $originItems, $this->expires);
             } else {
                 Tool::showMessage($response['msg'], false);
-
                 return view(config('olaindex.theme') . 'message');
             }
         }
@@ -220,7 +218,8 @@ class IndexController extends Controller
             'pathArray',
             'head',
             'readme',
-            'hasImage'
+            'hasImage',
+            'clientId'
         );
 
         return view(config('olaindex.theme') . 'one', $data);
@@ -233,7 +232,7 @@ class IndexController extends Controller
      *
      * @return mixed
      */
-    public function getFileOrCache($realPath,$oneIndex = 1)
+    public function getFileOrCache($realPath,$clientId = 1)
     {
         $absolutePath = Tool::getAbsolutePath($realPath);
         $absolutePathArr = explode('/', $absolutePath);
@@ -253,8 +252,8 @@ class IndexController extends Controller
         return Cache::remember(
             'one:file:' . $graphPath,
             $this->expires,
-            static function () use ($graphPath) {
-                $response = OneDrive::getInstance(one_account())->getItemByPath(
+            static function () use ($graphPath,$clientId) {
+                $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getItemByPath(
                     $graphPath,
                     '?select=id,eTag,name,size,lastModifiedDateTime,file,image,@microsoft.graph.downloadUrl'
                     . '&expand=thumbnails'
@@ -276,13 +275,13 @@ class IndexController extends Controller
      */
     public function show(Request $request)
     {
-        $oneIndex = $request->route()->parameter('oneIndex','1');
-
+        //$oneIndex = $request->route()->parameter('oneIndex','1');
+        $clientId = $request->route()->parameter('clientId','1');
         $requestPath = $request->route()->parameter('query', '/');
         if ($requestPath === '/') {
             return redirect()->route('home');
         }
-        $file = $this->getFileOrCache($requestPath);
+        $file = $this->getFileOrCache($requestPath,$clientId);
         if ($file === null || Arr::has($file, 'folder')) {
             Tool::showMessage('获取文件失败，请检查路径或稍后重试', false);
 
@@ -333,7 +332,7 @@ class IndexController extends Controller
                 }
                 $originPath = rawurldecode(trim(Tool::getAbsolutePath($requestPath), '/'));
                 $pathArray = $originPath ? explode('/', $originPath) : [];
-                $data = compact('file', 'pathArray', 'originPath');
+                $data = compact('file', 'pathArray', 'originPath','clientId');
 
                 return view(config('olaindex.theme') . $view, $data);
             }
@@ -350,20 +349,19 @@ class IndexController extends Controller
      */
     public function download(Request $request)
     {
+        $clientId = $request->route()->parameter('clientId','1');
         $requestPath = $request->route()->parameter('query', '/');
         if ($requestPath === '/') {
             Tool::showMessage('下载失败，请检查路径或稍后重试', false);
 
             return view(config('olaindex.theme') . 'message');
         }
-        $file = $this->getFileOrCache($requestPath);
+        $file = $this->getFileOrCache($requestPath,$clientId);
         if ($file === null || Arr::has($file, 'folder')) {
             Tool::showMessage('下载失败，请检查路径或稍后重试', false);
-
             return view(config('olaindex.theme') . 'message');
         }
         $url = $file['@microsoft.graph.downloadUrl'];
-
         return redirect()->away($url);
     }
 
@@ -378,7 +376,7 @@ class IndexController extends Controller
      */
     public function thumb($id, $size): RedirectResponse
     {
-        $response = OneDrive::getInstance(one_account())->thumbnails($id, $size);
+        $response = OneDrive::getInstance(getOnedriveAccount(1))->thumbnails($id, $size);
         if ($response['errno'] === 0) {
             $url = $response['data']['url'];
         } else {
@@ -400,7 +398,7 @@ class IndexController extends Controller
      */
     public function thumbCrop($id, $width, $height): RedirectResponse
     {
-        $response = OneDrive::getInstance(one_account())->thumbnails($id, 'large');
+        $response = OneDrive::getInstance(getOnedriveAccount(1))->thumbnails($id, 'large');
         if ($response['errno'] === 0) {
             $url = $response['data']['url'];
             @list($url, $tmp) = explode('&width=', $url);
@@ -421,7 +419,7 @@ class IndexController extends Controller
      * @return Factory|View
      * @throws ErrorException
      */
-    public function search(Request $request)
+    public function search(Request $request,$clientId = 1)
     {
         if (!setting('open_search', 0)) {
             Tool::showMessage('搜索暂不可用', false);
@@ -431,7 +429,7 @@ class IndexController extends Controller
         $limit = $request->get('limit', 20);
         if ($keywords) {
             $path = Tool::encodeUrl($this->root);
-            $response = OneDrive::getInstance(one_account())->search($path, $keywords);
+            $response = OneDrive::getInstance(getOnedriveAccount(1))->search($path, $keywords);
             if ($response['errno'] === 0) {
                 // 过滤结果中的文件夹\过滤微软OneNote文件
                 $items = Arr::where($response['data'], static function ($value) {
@@ -456,13 +454,13 @@ class IndexController extends Controller
      * @return RedirectResponse
      * @throws ErrorException
      */
-    public function searchShow($id): RedirectResponse
+    public function searchShow($id,$clientId = 1): RedirectResponse
     {
         if (!setting('open_search', 0)) {
             Tool::showMessage('搜索暂不可用', false);
             return view(config('olaindex.theme') . 'message');
         }
-        $response = OneDrive::getInstance(one_account())->itemIdToPath($id, setting('root'));
+        $response = OneDrive::getInstance(getOnedriveAccount(1))->itemIdToPath($id, setting('root'));
         if ($response['errno'] === 0) {
             $originPath = $response['data']['path'];
             if (trim($this->root, '/') !== '') {
