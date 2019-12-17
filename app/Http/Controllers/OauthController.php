@@ -57,7 +57,7 @@ class OauthController extends Controller
             }
             Session::forget('state'); // 兼容下次登录
             $code = $request->get('code');
-            $token = Authorize::getInstance(session('account_type'))->getAccessToken($code);
+            $token = Authorize::getInstance(session('account_type'),null,true)->getAccessToken($code);
             $token = $token->toArray();
             Log::info('access_token', $token);
             $access_token = Arr::get($token, 'access_token');
@@ -71,7 +71,8 @@ class OauthController extends Controller
                 'client_id' => session('client_id'),
                 'client_secret' => session('client_secret'),
                 'redirect_uri' => session('redirect_uri'),
-                'account_type' => session('account_type')
+                'account_type' => session('account_type'),
+                'nick_name' => '未命名'
             ];
             //Setting::batchUpdate($data);
             //session($data);
@@ -111,19 +112,16 @@ class OauthController extends Controller
      */
     public function refreshToken($redirect = true,$account)
     {
-        $token = Authorize::getInstance(setting('account_type'))->refreshAccessToken($account->refresh_token);
+        $token = Authorize::getInstance($account['account_type'],$account['id'])->refreshAccessToken($account['refresh_token']);
         $token = $token->toArray();
         $expires = Arr::get($token, 'expires_in') !== 0 ? time() + Arr::get($token, 'expires_in') : 0;
-        $account->access_token = Arr::get($token, 'access_token');
-        $account->refresh_token = Arr::get($token, 'refresh_token');
-        $account->access_token_expires = date('Y-m-d H:i:s', $expires);
-        //Log::info('refresh_token', $data);
-        //Setting::batchUpdate($data);
-        $account->save();
-        Tool::refreshAccount(getOnedriveAccount($account->id));
+        $account['access_token'] = Arr::get($token, 'access_token');
+        $account['refresh_token'] = Arr::get($token, 'refresh_token');
+        $account['access_token_expires'] = date('Y-m-d H:i:s', $expires);
+        OnedriveAccount::where('id',$account['id'])->update($account);
+        Tool::refreshAccount(getOnedriveAccount($account['id']));
         if ($redirect) {
             $redirect = Session::get('refresh_redirect', '/');
-
             return redirect()->away($redirect);
         }
         return json_encode(['code' => 200, 'msg' => 'ok']);

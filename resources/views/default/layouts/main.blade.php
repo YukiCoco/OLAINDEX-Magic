@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="https://cdn.staticfile.org/limonte-sweetalert2/7.33.1/sweetalert2.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/3.0.1/github-markdown.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.6/jquery.fancybox.min.css">
-
     @yield('css')
     <style>
         .item-list .list-group-item {
@@ -43,6 +42,11 @@
 
         <div class="collapse navbar-collapse" id="navbarColor01">
             <ul class="navbar-nav mr-auto">
+                @foreach (getOnedriveAccounts() as $drive)
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('home',['clientId' => $drive['id']]) }}"><i class="fa fa-hdd-o"></i> {{$drive['nick_name']}}</a>
+                </li>
+                @endforeach
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('home') }}"><i class="fa fa-home"></i> 首页</a>
                 </li>

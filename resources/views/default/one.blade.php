@@ -81,6 +81,7 @@
 @stop
 @section('content')
     @include('default.breadcrumb')
+
     @if (!blank($head))
         <div class="card border-light mb-3">
             <div class="card-header"><i class="fa fa-leaf"></i> HEAD</div>

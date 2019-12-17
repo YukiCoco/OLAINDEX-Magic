@@ -14,6 +14,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 /**
@@ -102,8 +103,11 @@ class IndexController extends Controller
 
         // 获取资源缓存
         $pathKey = 'one:' . (string)$clientId . ':path:' . $graphPath;
+        Log::debug($pathKey);
+
         if (Cache::has($pathKey)) {
             $item = Cache::get($pathKey);
+            Log::debug($item);
         } else {
             $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getItemByPath($graphPath);
             if ($response['errno'] === 0) {
@@ -122,7 +126,7 @@ class IndexController extends Controller
             return redirect()->away($item['@microsoft.graph.downloadUrl']);
         }
         // 获取列表资源
-        $key = 'one:list:' . $graphPath;
+        $key = 'one:'. (string)$clientId .':list:' . $graphPath;
         if (Cache::has($key)) {
             $originItems = Cache::get($key);
         } else {

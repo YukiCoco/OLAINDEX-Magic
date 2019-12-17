@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Utils\Tool;
 use App\Jobs\RefreshCache;
+use App\Models\OnedriveAccount;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
@@ -14,6 +15,7 @@ use Carbon\Carbon;
 use Artisan;
 use Auth;
 use Hash;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 后台管理操作
@@ -152,24 +154,14 @@ class AdminController extends Controller
         if (!$request->isMethod('post')) {
             return view(config('olaindex.theme') . 'admin.bind');
         }
-        if (!Tool::hasBind()) {
-            return redirect()->route('bind');
+        if($request->type == "delete"){ //解除绑定
+            OnedriveAccount::destroy((int)$request->id);
+        } elseif($request->type == "update"){//更新名称
+            OnedriveAccount::where('id',(int)$request->id)->update(['nick_name' => $request->nick_name]);
         }
-        $data = [
-            'access_token' => '',
-            'refresh_token' => '',
-            'access_token_expires' => 0,
-            'root' => '/',
-            'image_hosting' => 0,
-            'image_hosting_path' => '',
-            'account_email' => '',
-            'account_state' => '暂时无法使用',
-            'account_extend' => ''
-        ];
-        Setting::batchUpdate($data);
-        Tool::showMessage('保存成功！');
-
-        return redirect()->route('bind');
+        refreshOnedriveAccounts();
+        Tool::showMessage('修改成功！');
+        return redirect()->route('admin.bind');
     }
 
     public function newBind(){

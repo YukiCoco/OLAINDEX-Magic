@@ -26,15 +26,18 @@ class VerifyAccessToken
         }
         $onedriveAccounts = OnedriveAccount::all();
         foreach ($onedriveAccounts as $account) {
-            $expires = $account->access_token_expires;
-            $expires = strtotime($expires);
-            $hasExpired = $expires - time() <= 0;
-            if ($hasExpired) {
-                $current = url()->current();
-                Session::put('refresh_redirect', $current);
-                $oauth = new OauthController();
-                return $oauth->refreshToken(true,$account);
-            }
+            // $expires = $account->access_token_expires;
+            // $expires = strtotime($expires);
+            // $hasExpired = $expires - time() <= 0;
+            // if ($hasExpired) {
+            //     $current = url()->current();
+            //     Session::put('refresh_redirect', $current);
+            //     $oauth = new OauthController();
+
+            //     return $oauth->refreshToken(true,$account);
+            // }
+            refresh_token($account->id);
+            refreshOnedriveAccounts();
         }
         return $next($request);
     }

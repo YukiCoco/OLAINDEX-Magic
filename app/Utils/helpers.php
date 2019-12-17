@@ -68,21 +68,47 @@ if (!function_exists('one_account')) {
 
 if(!function_exists('getOnedriveAccount')){
     /**
-     * @description:
+     * @description: 获取 Onedrive 账户
      * @param int $index 数据库中id
      * @param string $key
      * @return: array
      */
     function getOnedriveAccount($id = 1,$key = ''){
-        $accounts = \Cache::remember('onedrive_account', 60*60,function () {
+        $accounts = \Cache::remember('onedrive_accounts', 60*60,function () {
             return OnedriveAccount::all();
         });
         $account = $accounts->where('id',$id)->first();
-        Log::debug($account);
         return $key ? $account->get($key, '') : $account->toArray();
     }
 }
 
+if(!function_exists('getOnedriveAccounts')){
+
+    /**
+     * @description: 获取所有 Onedrive 账户
+     * @param {type}
+     * @return:
+     */
+    function getOnedriveAccounts(){
+        $accounts = \Cache::remember('onedrive_accounts', 60*60,function () {
+            return OnedriveAccount::all();
+        });
+        return $accounts;
+    }
+}
+
+if(!function_exists('refreshOnedriveAccounts')){
+
+    /**
+     * @description: 从缓存中刷新所有onedrive账户
+     * @param {type}
+     * @return:
+     */
+    function refreshOnedriveAccounts(){
+        \Cache::forget('onedrive_accounts');
+        \Cache::put('onedrive_accounts', OnedriveAccount::all(), 60*60);
+    }
+}
 
 if (!function_exists('one_info')) {
 
@@ -94,7 +120,7 @@ if (!function_exists('one_info')) {
      */
     function one_info($key = '')
     {
-        return [];
+        //return [];
         if (refresh_token()) {
             $quota = Cache::remember(
                 'one:quota',
@@ -127,14 +153,14 @@ if (!function_exists('refresh_token')) {
      * @return bool
      * @throws ErrorException
      */
-    function refresh_token()
+    function refresh_token($id)
     {
         $expires = setting('access_token_expires', 0);
         $expires = strtotime($expires);
         $hasExpired = $expires - time() <= 0;
         if ($hasExpired) {
             $oauth = new OauthController();
-            $res = json_decode($oauth->refreshToken(false,getOnedriveAccount(1)), true);
+            $res = json_decode($oauth->refreshToken(false,getOnedriveAccount($id)), true);
 
             return $res['code'] === 200;
         }

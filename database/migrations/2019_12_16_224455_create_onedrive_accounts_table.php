@@ -25,6 +25,7 @@ class CreateOnedriveAccountsTable extends Migration
             $table->string('account_email')->nullable();
             $table->string('account_state')->nullable();
             $table->string('account_extend')->nullable();
+            $table->string('nick_name')->nullable();
             $table->timestamps();
         });
     }

@@ -56,9 +56,6 @@ class OneDrive
         $baseUrl = $clientConfig->graph_endpoint;
         $apiVersion = $clientConfig->api_version;
         $accessToken = Arr::get($account, 'access_token', '');
-        Log::debug($accessToken);
-        Log::debug($baseUrl);
-        Log::debug($apiVersion);
         $this->graph = (new GraphRequest())
             ->setAccessToken($accessToken)
             ->setBaseUrl($baseUrl)

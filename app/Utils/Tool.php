@@ -103,7 +103,8 @@ class Tool
      */
     public static function hasConfig(): bool
     {
-        return setting('client_id') && setting('client_secret') && setting('redirect_uri');
+        return 1 == 1;
+        //return setting('client_id') && setting('client_secret') && setting('redirect_uri');
     }
 
     /**
@@ -113,9 +114,9 @@ class Tool
      */
     public static function hasBind(): bool
     {
-        return setting('access_token') && setting('refresh_token') && setting('access_token_expires');
+        return OnedriveAccount::all()->count() != 0;
+        //return setting('access_token') && setting('refresh_token') && setting('access_token_expires');
     }
-
     /**
      * 判断资源列表是否含有图片
      *
@@ -325,7 +326,6 @@ class Tool
             if ($resp['errno'] === 0) {
                 $extend = Arr::get($resp, 'data');
                 $data['account_extend'] = collect($extend); //这是一个坑
-                Log::debug($extend);
             }
         } else {
             $data = [
