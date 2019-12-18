@@ -352,7 +352,7 @@ class IndexController extends Controller
      */
     public function download(Request $request)
     {
-        $clientId = $request->route()->parameter('clientId','1');
+        $clientId = $request->clientId;
         $requestPath = $request->route()->parameter('query', '/');
         if ($requestPath === '/') {
             Tool::showMessage('下载失败，请检查路径或稍后重试', false);
