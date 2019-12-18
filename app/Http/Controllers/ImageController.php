@@ -40,6 +40,7 @@ class ImageController extends Controller
      */
     public function upload(Request $request)
     {
+        $clientId = $request->header('Client-ID');
         $field = 'olaindex_img';
         if (!$request->hasFile($field)) {
             $data = ['errno' => 400, 'message' => '上传文件为空'];
@@ -65,7 +66,7 @@ class ImageController extends Controller
             $middleName = '/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . Str::random(8) . '/';
             $filePath = trim($hostingPath . $middleName . $file->getClientOriginalName(), '/');
             $remoteFilePath = Tool::getOriginPath($filePath); // 远程图片保存地址
-            $response = OneDrive::getInstance(one_account())->uploadByPath($remoteFilePath, $content);
+            $response = OneDrive::getInstance(getOnedriveAccount($clientId))->uploadByPath($remoteFilePath, $content);
             if ($response['errno'] === 0) {
                 $sign = $response['data']['id'] . '.' . encrypt($response['data']['eTag']);
                 $fileIdentifier = encrypt($sign);
@@ -76,7 +77,7 @@ class ImageController extends Controller
                         'filename' => $response['data']['name'],
                         'size' => $response['data']['size'],
                         'time' => $response['data']['lastModifiedDateTime'],
-                        'url' => route('view', $filePath),
+                        'url' => route('view', ['query' => $filePath,'clientId' => $clientId]),
                         'delete' => route('delete', $fileIdentifier),
                     ],
                 ];

@@ -26,14 +26,18 @@
         src="{{asset('js/filepond-plugin-file-validate-size.min.js')}}"></script>
     <script
         src="{{ asset('js/filepond-plugin-file-validate-type.min.js')}}"></script>
-
     <script>
-        FilePond.registerPlugin(
-            FilePondPluginImagePreview,
-            FilePondPluginFileValidateSize,
-            FilePondPluginFileValidateType
-        );
-        FilePond.setOptions({
+        $(document).ready(function(){
+            refreshFilePond();
+        })
+        /**
+         * @description: 刷新以修改Onedrive盘
+         * @param {type}
+         * @return:
+         */
+        function refreshFilePond() {
+            console.log($('select').find('option:selected').val());
+            FilePond.setOptions({
             dropOnPage: true,
             dropOnElement: true,
             dropValidation: true,
@@ -43,7 +47,9 @@
                     url: '/',
                     method: 'POST',
                     withCredentials: false,
-                    headers: {},
+                    headers: { //选择Onedrive分区
+                        'Client-ID' : $('select').find('option:selected').val()
+                    },
                     timeout: 20000,
                     onload: (response) => {
                         let res = JSON.parse(response);
@@ -72,6 +78,13 @@
                 fetch: null
             },
         });
+        }
+        FilePond.registerPlugin(
+            FilePondPluginImagePreview,
+            FilePondPluginFileValidateSize,
+            FilePondPluginFileValidateType
+        );
+
         const pond = FilePond.create(document.querySelector('input[name=olaindex_img]'), {
             acceptedFileTypes: ['image/*'],
         });
@@ -89,7 +102,9 @@
         pond.on('removefile', (file) => {
             console.log('文件已删除', file);
         });
-
+        // pond.on('addfile',(error, file) => {
+        //     file.setMetadata('client_id',$('select').find('option:selected').val());
+        // });
         function onCopyBtnClicked(type) {
             var eles = $("[data-section-type$='" + type + "']");
             var text = "";
@@ -128,9 +143,13 @@
             <div class="page-container">
                 <h4>图床</h4>
                 <p>您可以尝试文件拖拽或者点击虚线框进行文件上传，单张图片最大支持4MB.</p>
+                <select onchange="refreshFilePond()" class="form-control" style="margin-bottom: 16px;">
+                    @foreach (getOnedriveAccounts() as $item)
+                <option value="{{ $item->id }}">{{ $item->nick_name }}</option>
+                    @endforeach
+                </select>
                 <input type="file" class="filepond" name="olaindex_img" multiple data-max-file-size="4MB"
                        data-max-files="5" data-instant-upload="false"/>
-
             </div>
         </div>
     </div>

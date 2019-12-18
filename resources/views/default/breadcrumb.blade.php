@@ -9,7 +9,7 @@
                     @else
                         @if (!blank($value))
                             <li class="breadcrumb-item "><a
-                                    href="{{ route('home',\App\Utils\Tool::encodeUrl(\App\Utils\Tool::getBreadcrumbUrl($key + 1,$pathArray))) }}">{{  \Illuminate\Support\Str::limit($value,20) }}</a>
+                                    href="{{ route('home',['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl(\App\Utils\Tool::getBreadcrumbUrl($key + 1,$pathArray))]) }}">{{  \Illuminate\Support\Str::limit($value,20) }}</a>
                             </li>
                         @endif
                     @endif
@@ -22,7 +22,7 @@
                     @else
                         @if (!blank($value) && $key === (count($pathArray) - 2))
                             <li class="breadcrumb-item "><a
-                                    href="{{ route('home',\App\Utils\Tool::encodeUrl(\App\Utils\Tool::getBreadcrumbUrl($key + 1,$pathArray))) }}">{{  \Illuminate\Support\Str::limit($value,20) }}</a>
+                                    href="{{ route('home',['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl(\App\Utils\Tool::getBreadcrumbUrl($key + 1,$pathArray))]) }}">{{  \Illuminate\Support\Str::limit($value,20) }}</a>
                             </li>
                         @endif
                     @endif

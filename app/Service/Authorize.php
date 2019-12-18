@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entities\ClientConfigEntity;
+use App\Utils\Tool;
 use Curl\Curl;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -18,26 +19,30 @@ class Authorize
 
 
     private $account_type;
+    private $id;
+    private $isNewBind;
 
     /**
      * @param $account_type
      * @return Authorize
      */
-    public static function getInstance($account_type): Authorize
+    public static function getInstance($account_type,$id = 1,$isNewBind = false): Authorize
     {
         if (!array_key_exists($account_type, self::$instances)) {
-            self::$instances[$account_type] = new self($account_type);
+            self::$instances[$id] = new self($account_type,$id,$isNewBind);
         }
-        return self::$instances[$account_type];
+        return self::$instances[$id];
     }
 
     /**
      * Authorize constructor.
      * @param $account_type
      */
-    private function __construct($account_type)
+    private function __construct($account_type,$id,$isNewBind)
     {
         $this->account_type = $account_type;
+        $this->id = $id;
+        $this->isNewBind = $isNewBind;
     }
 
     /**
@@ -48,7 +53,13 @@ class Authorize
      */
     private function request($form_params): Collection
     {
-        $client_config = new ClientConfigEntity(CoreConstants::getClientConfig($this->account_type));
+        if($this->isNewBind){
+            //绑定时
+            $client_config = new ClientConfigEntity(CoreConstants::getTmpConfig($this->account_type));
+        } else{
+            //刷新时
+            $client_config = new ClientConfigEntity(CoreConstants::getClientConfig($this->account_type,$this->id));
+        }
         $form_params = array_merge([
             'client_id' => $client_config->client_id,
             'client_secret' => $client_config->client_secret,
@@ -73,7 +84,6 @@ class Authorize
             Log::error('OneDrive Authorize Request Error.', $error);
             $message = $curl->errorCode . ': ' . $curl->errorMessage . "\n";
             throw new ErrorException($message);
-
         }
         return collect($curl->response);
     }
@@ -86,8 +96,7 @@ class Authorize
      */
     public function getAuthorizeUrl($state = ''): string
     {
-        $client_config = new ClientConfigEntity(CoreConstants::getClientConfig($this->account_type));
-
+        $client_config = new ClientConfigEntity(CoreConstants::getTmpConfig($this->account_type));
         $values = [
             'client_id' => $client_config->client_id,
             'redirect_uri' => $client_config->redirect_uri,

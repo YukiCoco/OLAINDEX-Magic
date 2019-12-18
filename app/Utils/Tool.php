@@ -3,6 +3,7 @@
 
 namespace App\Utils;
 
+use App\Models\OnedriveAccount;
 use App\Models\Setting;
 use App\Service\CoreConstants;
 use App\Service\OneDrive;
@@ -102,7 +103,8 @@ class Tool
      */
     public static function hasConfig(): bool
     {
-        return setting('client_id') && setting('client_secret') && setting('redirect_uri');
+        return setting('has_config') == 'true';
+        //return setting('client_id') && setting('client_secret') && setting('redirect_uri');
     }
 
     /**
@@ -112,9 +114,9 @@ class Tool
      */
     public static function hasBind(): bool
     {
-        return setting('access_token') && setting('refresh_token') && setting('access_token_expires');
+        return OnedriveAccount::all()->count() != 0;
+        //return setting('access_token') && setting('refresh_token') && setting('access_token_expires');
     }
-
     /**
      * 判断资源列表是否含有图片
      *
@@ -301,7 +303,6 @@ class Tool
                 $absolutes[] = $part;
             }
         }
-
         return str_replace('//', '/', '/' . implode('/', $absolutes) . '/');
     }
 
@@ -313,6 +314,7 @@ class Tool
     public static function refreshAccount($account): void
     {
         $response = OneDrive::getInstance($account)->getAccountInfo();
+        $data = [];
         if ($response['errno'] === 0) {
             $extend = Arr::get($response, 'data');
             $account_email = $response['errno'] === 0 ? Arr::get($extend, 'userPrincipalName') : '';
@@ -323,14 +325,14 @@ class Tool
             $resp = OneDrive::getInstance($account)->getDriveInfo();
             if ($resp['errno'] === 0) {
                 $extend = Arr::get($resp, 'data');
-                $data['account_extend'] = $extend;
+                $data['account_extend'] = collect($extend); //这是一个坑
             }
         } else {
             $data = [
                 'account_state' => '账号异常',
             ];
         }
-        Setting::batchUpdate($data);
+        OnedriveAccount::where('access_token',Arr::get($account,'access_token'))->update($data);
     }
 
     /**

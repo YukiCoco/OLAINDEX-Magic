@@ -2,6 +2,7 @@
 
 
 namespace App\Service;
+use App\Models\OnedriveAccount;
 
 class CoreConstants
 {
@@ -10,8 +11,8 @@ class CoreConstants
         = <<<EOF
    ____  __    ___    _____   ______  _______  __
   / __ \/ /   /   |  /  _/ | / / __ \/ ____/ |/ /
- / / / / /   / /| |  / //  |/ / / / / __/  |   / 
-/ /_/ / /___/ ___ |_/ // /|  / /_/ / /___ /   |  
+ / / / / /   / /| |  / //  |/ / / / / __/  |   /
+/ /_/ / /___/ ___ |_/ // /|  / /_/ / /___ /   |
 \____/_____/_/  |_/___/_/ |_/_____/_____//_/|_|
 EOF;
     const LATEST_VERSION = 'v4.0';
@@ -40,14 +41,12 @@ EOF;
     const DEFAULT_TIMEOUT = 120; // 默认超时时间
     const DEFAULT_CONNECT_TIMEOUT = 5; // 默认连接超时时间
 
-
-    public static function getClientConfig(string $account_type = 'com')
-    {
+    public static function getTmpConfig(string $account_type = 'com'){
         $config = [
             self::ACCOUNT_COM => [
-                'client_id' => setting('client_id'),
-                'client_secret' => setting('client_secret'),
-                'redirect_uri' => setting('redirect_uri', self::DEFAULT_REDIRECT_URI),
+                'client_id' => session('client_id'),
+                'client_secret' => session('client_secret'),
+                'redirect_uri' => session('redirect_uri', self::DEFAULT_REDIRECT_URI),
                 'authorize_url' => self::AUTHORITY_URL,
                 'authorize_endpoint' => self::AUTHORIZE_ENDPOINT,
                 'token_endpoint' => self::TOKEN_ENDPOINT,
@@ -56,9 +55,39 @@ EOF;
                 'scopes' => self::SCOPES
             ],
             self::ACCOUNT_CN => [
-                'client_id' => setting('client_id'),
-                'client_secret' => setting('client_secret'),
-                'redirect_uri' => setting('redirect_uri', self::DEFAULT_REDIRECT_URI),
+                'client_id' => session('client_id'),
+                'client_secret' => session('client_secret'),
+                'redirect_uri' => session('redirect_uri', self::DEFAULT_REDIRECT_URI),
+                'authorize_url' => self::AUTHORITY_URL_21V,
+                'authorize_endpoint' => self::AUTHORIZE_ENDPOINT_21V,
+                'token_endpoint' => self::TOKEN_ENDPOINT_21V,
+                'graph_endpoint' => self::REST_ENDPOINT_21V,
+                'api_version' => self::API_VERSION,
+                'scopes' => self::SCOPES
+            ]
+        ];
+        return $config[$account_type];
+    }
+
+    public static function getClientConfig(string $account_type = 'com',$index = 1)
+    {
+        $account = OnedriveAccount::where('id',$index)->first();
+        $config = [
+            self::ACCOUNT_COM => [
+                'client_id' => $account->client_id,
+                'client_secret' => $account->client_secret,
+                'redirect_uri' => $account->redirect_uri,
+                'authorize_url' => self::AUTHORITY_URL,
+                'authorize_endpoint' => self::AUTHORIZE_ENDPOINT,
+                'token_endpoint' => self::TOKEN_ENDPOINT,
+                'graph_endpoint' => self::REST_ENDPOINT,
+                'api_version' => self::API_VERSION,
+                'scopes' => self::SCOPES
+            ],
+            self::ACCOUNT_CN => [
+                'client_id' => $account->client_id,
+                'client_secret' => $account->client_secret,
+                'redirect_uri' => $account->redirect_uri,
                 'authorize_url' => self::AUTHORITY_URL_21V,
                 'authorize_endpoint' => self::AUTHORIZE_ENDPOINT_21V,
                 'token_endpoint' => self::TOKEN_ENDPOINT_21V,

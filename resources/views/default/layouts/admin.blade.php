@@ -11,21 +11,27 @@
           href="https://cdn.staticfile.org/bootswatch/4.3.1/{{ setting('theme','materia') }}/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/limonte-sweetalert2/7.33.1/sweetalert2.min.css">
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
     @yield('css')
     <script>
-        Config = {
+        var clientId = {{ request()->route()->parameter('clientId',1) }};
+        var Config;
+        refreshConfig();
+        function refreshConfig() {
+            Config = {
             'routes': {
                 'upload_image': '{{ route('image.upload') }}',
-                'upload_file': '{{ route('admin.file.upload') }}',
-                'copy': '{{ route('admin.copy') }}',
-                'move': '{{ route('admin.move') }}',
-                'path2id': '{{ route('admin.path2id') }}',
-                'share': '{{ route('admin.share') }}',
-                'delete_share': '{{ route('admin.share.delete') }}',
-                'upload_url': '{{ route('admin.url.upload') }}'
+                'upload_file': '{{ route('admin.file.upload') }}/' + clientId,
+                'copy': '{{ route('admin.copy') }}/' + clientId,
+                'move': '{{ route('admin.move') }}/' + clientId,
+                'path2id': '{{ route('admin.path2id') }}/' + clientId,
+                'share': '{{ route('admin.share') }}/' + clientId,
+                'delete_share': '{{ route('admin.share.delete') }}/' + clientId,
+                'upload_url': '{{ route('admin.url.upload') }}/' + clientId
             },
             '_token': '{{ csrf_token() }}',
         };
+        }
     </script>
 </head>
 
@@ -51,6 +57,7 @@
                         <a class="dropdown-item" href="{{ route('admin.show') }}">显示设置 </a>
                         <a class="dropdown-item" href="{{ route('admin.profile') }}">密码设置 </a>
                         <a class="dropdown-item" href="{{ route('admin.bind') }}">绑定设置 </a>
+                        <a class="dropdown-item" href="{{ route('admin.usage') }}">使用状况 </a>
                     </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -98,15 +105,6 @@
             <p>{{ session()->pull('alertMessage') }}</p>
         </div>
     @endif
-    <div class="bg-white">
-        <p class="text-center text-muted">{{ one_account('account_email') }}</p>
-        <p class="text-center">
-            <span class="text-info">状态: {{ one_info('state') }} &nbsp;&nbsp;</span>
-            <span class="text-danger">已使用: {{ one_info('used') }} &nbsp;&nbsp;</span>
-            <span class="text-warning">剩余: {{ one_info('remaining') }} &nbsp;&nbsp;</span>
-            <span class="text-success">全部: {{ one_info('total') }} &nbsp;&nbsp;</span>
-        </p>
-    </div>
     <div class="card border-light mb-3">
         <div class="card-header">
             @yield('title')
@@ -125,7 +123,6 @@
         </div>
     </footer>
 </div>
-<script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
 <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script src="https://cdn.staticfile.org/limonte-sweetalert2/7.33.1/sweetalert2.all.min.js"></script>

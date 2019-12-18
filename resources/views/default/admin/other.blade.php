@@ -2,6 +2,12 @@
 @section('title','其它')
 @section('content')
     <div class="form-group">
+        <label class="form-control-label" for="target_directory">选择分区</label>
+        <select onchange="onSelectChanged()" class="form-control" style="margin-bottom:4px">
+            @foreach (getOnedriveAccounts() as $item)
+        <option value="{{ $item->id }}">{{ $item->nick_name }}</option>
+            @endforeach
+        </select>
         <label for="action">操作：</label>
         <select class="custom-select" id="action" name="action">
             <option value="">请选择操作</option>
@@ -44,6 +50,11 @@
 @section('js')
     <script src="https://cdn.bootcss.com/axios/0.19.0/axios.min.js"></script>
     <script>
+        function onSelectChanged() {
+            clientId = $('select').find('option:selected').val();
+            refreshConfig();
+            console.log(clientId);
+        }
         $(function () {
             $("#submit_btn").on("click", function () {
                 swal('提示', '请稍等...', 'info');

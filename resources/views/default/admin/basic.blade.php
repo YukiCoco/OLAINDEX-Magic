@@ -1,5 +1,19 @@
 @extends('default.layouts.admin')
 @section('title','基础设置')
+@section('js')
+<script>
+    $(document).ready(function(){
+        $('#disk_selector').find('option').each(function(i){
+            if($(this).val() == '{{ setting('main_client_id')}}'){
+                $(this).prop('selected',true);
+            }
+        })
+    })
+    function onSelectChanged() {
+        $('#disk_main').prop('value', $('#disk_selector').find('option:selected').val());
+    }
+</script>
+@stop
 @section('content')
     <form action="" method="post">
         @csrf
@@ -125,6 +139,15 @@
                        @if((int)setting('image_home',0) === 0) checked @endif value="0">
                 <label class="custom-control-label" for="image_home0">否</label>
             </div>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="disk_selector">在首页展示的盘区</label>
+            <input type="hidden" id="disk_main" name="main_client_id">
+            <select onchange="onSelectChanged()" id="disk_selector" class="form-control">
+                @foreach (getOnedriveAccounts() as $item)
+            <option value="{{ $item->id }}">{{ $item->nick_name }}</option>
+                @endforeach
+            </select>
         </div>
         <div class="form-group">
             <label class="form-control-label" for="image_hosting_path">OneDrive中图床保存地址</label>

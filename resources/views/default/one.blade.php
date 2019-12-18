@@ -32,7 +32,7 @@
             var links = "";
             @foreach($items as $item)
             @if(! \Illuminate\Support\Arr::has($item,'folder'))
-            links += "{{ route('download',\App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])) }}" +'\r\n';
+            links += "{{ route('download', ['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])]) }}" +'\r\n';
             @endif
             @endforeach
             copyText(links, function () {
@@ -70,7 +70,7 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
-                    window.open('/file/delete/' + $sign, '_blank');
+                    window.open('/file/delete/'+ '{{ $clientId }}/' + $sign, '_blank');
                 } else if (result.dismiss === swal.DismissReason.cancel) {
                     swal('已取消', '文件安全 :)', 'error');
                 }
@@ -81,6 +81,7 @@
 @stop
 @section('content')
     @include('default.breadcrumb')
+
     @if (!blank($head))
         <div class="card border-light mb-3">
             <div class="card-header"><i class="fa fa-leaf"></i> HEAD</div>
@@ -215,7 +216,7 @@
                 <li class="list-group-item list-group-item-action">
                     <div class="row">
                         <div class="col-8 col-sm-6">
-                                <a href="{{ route('home',\App\Utils\Tool::encodeUrl(\App\Utils\Tool::getParentUrl($pathArray))) }}"><i
+                                <a href="{{ route('home',['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl(\App\Utils\Tool::getParentUrl($pathArray))]) }}"><i
                                     class="fa fa-level-up"></i> 返回上一层</a>
                         </div>
                     </div>
@@ -226,12 +227,12 @@
                     <div class="row">
                         <div class="col-8 col-sm-6" style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">
                             @if( \Illuminate\Support\Arr::has($item,'folder'))
-                                <a href="{{ route('home',\App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])) }}"
+                                <a href="{{ route('home',['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])]) }}"
                                    title="{{ $item['name'] }}">
                                     <i class="fa fa-folder"></i> {{ $item['name'] }}
                                 </a>
                             @else
-                                <a href="{{ route('show',\App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])) }}"
+                                <a href="{{ route('show',['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])]) }}"
                                    title="{{ $item['name'] }}">
                                     <i class="fa {{ \App\Utils\Tool::getExtIcon($item['ext'] ?? '') }}"></i> {{ $item['name'] }}
                                 </a>
@@ -249,7 +250,7 @@
                             <span class="pull-right">
                                 @if(! \Illuminate\Support\Arr::has($item,'folder'))
                                     @if( \Illuminate\Support\Arr::has($item,'image'))
-                                        <a href="{{ route('view',\App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])) }}"
+                                        <a href="{{ route('view',['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])]) }}"
                                            data-fancybox="image-list" data-caption="{{ $item['name'] }}"
                                            data-toggle="popover" data-placement="bottom"
                                            data-content="<img src='{{  \Illuminate\Support\Arr::get($item,'thumbnails.0.small.url','') }}' alt='{{ $item['name'] }}' class='img-fluid'>"
@@ -261,11 +262,11 @@
                                                 class="fa fa-pencil"></i></a>&nbsp;&nbsp;
                                     @endif
                                     <a class="download_url"
-                                       href="{{ route('download',\App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])) }}"><i
+                                       href="{{ route('download',['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])]) }}"><i
                                             class="fa fa-download"
                                             title="下载"></i></a>&nbsp;&nbsp;
                                 @else
-                                    <a href="{{ route('home',\App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])) }}"
+                                    <a href="{{ route('home',['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])]) }}"
                                        title="{{ $item['name'] }}"><i class="fa fa-folder-open"></i></a>&nbsp;&nbsp;
                                 @endif
                                 @auth

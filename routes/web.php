@@ -7,8 +7,8 @@ use App\Utils\Tool;
 Route::get('/oauth', 'OauthController@oauth')->name('oauth');
 
 // 缩略图
-Route::get('thumb/{id}/size/{size}', 'IndexController@thumb')->name('thumb');
-Route::get('thumb/{id}/{width}/{height}', 'IndexController@thumbCrop')->name('thumb_crop');
+Route::get('thumb/{clientId}/{id}/size/{size}', 'IndexController@thumb')->name('thumb');
+Route::get('thumb/{clientId}/{id}/{width}/{height}', 'IndexController@thumbCrop')->name('thumb_crop');
 
 // 搜索
 Route::any('search', 'IndexController@search')
@@ -29,7 +29,7 @@ Route::get('image', 'ImageController@index')->name('image');
 Route::post('image-upload', 'ImageController@upload')->name('image.upload');
 
 //删除
-Route::get('file/delete/{sign}', 'ManageController@deleteItem')->name('delete');
+Route::get('file/delete/{client_id?}/{sign}', 'ManageController@deleteItem')->name('delete');
 
 //后台设置管理
 Route::get('login', 'LoginController@showLoginForm')->name('login');
@@ -53,7 +53,9 @@ Route::prefix('admin')->group(static function () {
     Route::any('profile', 'AdminController@profile')->name('admin.profile');
     Route::any('clear', 'AdminController@clear')->name('admin.cache.clear');
     Route::any('refresh', 'AdminController@refresh')->name('admin.cache.refresh');
-
+    Route::get('newbind', 'AdminController@newBind')->name('admin.bind.newbind');
+    Route::post('newbind', 'AdminController@createBind')->name('admin.bind.createNewbind');
+    Route::get('usage', 'AdminController@usage')->name('admin.usage');
     // 文件夹操作
     Route::prefix('folder')->group(static function () {
         Route::post('lock', 'ManageController@lockFolder')->name('admin.lock');
@@ -62,21 +64,21 @@ Route::prefix('admin')->group(static function () {
     // 文件操作
     Route::prefix('file')->group(static function () {
         Route::get('/', 'ManageController@uploadFile')->name('admin.file');
-        Route::post('upload', 'ManageController@uploadFile')
+        Route::post('upload/{clientId?}', 'ManageController@uploadFile')
             ->name('admin.file.upload');
-        Route::any('add', 'ManageController@createFile')
+        Route::any('add/{clientId?}', 'ManageController@createFile')
             ->name('admin.file.create');
-        Route::any('edit/{id}', 'ManageController@updateFile')
+        Route::any('edit/{id}/{clientId?}', 'ManageController@updateFile')
             ->name('admin.file.update');
         Route::view('other', config('olaindex.theme') . 'admin.other')
             ->name('admin.other');
-        Route::post('copy', 'ManageController@copyItem')->name('admin.copy');
-        Route::post('move', 'ManageController@moveItem')->name('admin.move');
-        Route::post('file/path2id', 'ManageController@pathToItemId')
+        Route::post('copy/{clientId?}', 'ManageController@copyItem')->name('admin.copy');
+        Route::post('move/{clientId?}', 'ManageController@moveItem')->name('admin.move');
+        Route::post('file/path2id/{clientId?}', 'ManageController@pathToItemId')
             ->name('admin.path2id');
-        Route::post('share', 'ManageController@createShareLink')
+        Route::post('share/{clientId?}', 'ManageController@createShareLink')
             ->name('admin.share');
-        Route::post('share/delete', 'ManageController@deleteShareLink')
+        Route::post('share/delete/{clientId?}', 'ManageController@deleteShareLink')
             ->name('admin.share.delete');
     });
     // 离线上传
@@ -106,19 +108,23 @@ if (!$showOriginPath) {
 
     //列表
     Route::prefix('home')->group(static function () {
-        Route::get('{query?}', 'IndexController@list')->where('query', '.*')->name('home');
+        Route::get('{clientId?}/{query?}', 'IndexController@list')->where('query', '.*')->name('home');
     });
 
     //展示
-    Route::get('show/{query}', 'IndexController@show')
-        ->where('query', '.*')
+    Route::get('show/{clientId?}/{query}', 'IndexController@show')
+        ->where('query', '.*') //正则约束
         ->name('show');
+    //展示
+    // Route::get('{oneIndex}/show/{query}', 'IndexController@show')
+    // ->where('query', '.*') //正则约束
+    // ->name('show');
     // 下载
-    Route::get('down/{query}', 'IndexController@download')
+    Route::get('down/{clientId?}/{query}', 'IndexController@download')
         ->where('query', '.*')
         ->name('download');
     //看图
-    Route::get('view/{query}', 'IndexController@download')
+    Route::get('view/{clientId?}/{query}', 'IndexController@download')
         ->where('query', '.*')
         ->name('view');
 } else {

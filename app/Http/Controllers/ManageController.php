@@ -42,6 +42,7 @@ class ManageController extends Controller
      */
     public function uploadFile(Request $request)
     {
+        $client_id = $request->route()->parameter('clientId', setting('main_client_id'));
         if (!$request->isMethod('post')) {
             return view(config('olaindex.theme') . 'admin.file');
         }
@@ -67,7 +68,7 @@ class ManageController extends Controller
             $content = file_get_contents($path);
             $storeFilePath = trim(Tool::encodeUrl($target_directory), '/') . '/' . $file->getClientOriginalName(); // 远程保存地址
             $remoteFilePath = Tool::getOriginPath($storeFilePath); // 远程文件保存地址
-            $response = OneDrive::getInstance(one_account())->uploadByPath($remoteFilePath, $content);
+            $response = OneDrive::getInstance(getOnedriveAccount($client_id))->uploadByPath($remoteFilePath, $content);
             if ($response['errno'] === 0) {
                 $data = [
                     'errno' => 200,
@@ -95,6 +96,7 @@ class ManageController extends Controller
      */
     public function lockFolder(Request $request)
     {
+        $client_id = $request->route()->parameter('clientId', setting('main_client_id'));
         try {
             $path = decrypt($request->get('path'));
         } catch (DecryptException $e) {
@@ -106,7 +108,7 @@ class ManageController extends Controller
         $storeFilePath = trim($path, '/') . '/.password';
         $remoteFilePath
             = Tool::getOriginPath($storeFilePath); // 远程password保存地址
-        $response = OneDrive::getInstance(one_account())->uploadByPath($remoteFilePath, $password);
+        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->uploadByPath($remoteFilePath, $password);
         $response['errno'] === 0 ? Tool::showMessage('操作成功！')
             : Tool::showMessage('操作失败，请重试！', false);
         Cache::forget('one:list:' . Tool::getAbsolutePath($path));
@@ -122,6 +124,7 @@ class ManageController extends Controller
      */
     public function createFile(Request $request)
     {
+        $client_id = $request->route()->parameter('clientId', setting('main_client_id'));
         if (!$request->isMethod('post')) {
             return view(config('olaindex.theme') . 'admin.add');
         }
@@ -136,7 +139,7 @@ class ManageController extends Controller
         $content = $request->get('content');
         $storeFilePath = trim($path, '/') . '/' . $name . '.md';
         $remoteFilePath = Tool::getOriginPath($storeFilePath); // 远程md保存地址
-        $response = OneDrive::getInstance(one_account())->uploadByPath($remoteFilePath, $content);
+        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->uploadByPath($remoteFilePath, $content);
         $response['errno'] === 0 ? Tool::showMessage('添加成功！')
             : Tool::showMessage('添加失败！', false);
         Cache::forget('one:list:' . Tool::getAbsolutePath($path));
@@ -151,10 +154,11 @@ class ManageController extends Controller
      * @return Factory|RedirectResponse|View
      * @throws ErrorException
      */
-    public function updateFile(Request $request, $id)
+    public function updateFile(Request $request)
     {
+        $client_id = $request->route()->parameter('clientId');
         if (!$request->isMethod('post')) {
-            $response = OneDrive::getInstance(one_account())->getItem($id);
+            $response = OneDrive::getInstance(getOnedriveAccount($client_id))->getItem($id);
             if ($response['errno'] === 0) {
                 $file = $response['data'];
                 $file['content'] = Tool::getFileContent($file['@microsoft.graph.downloadUrl'], false);
@@ -166,7 +170,7 @@ class ManageController extends Controller
             return view(config('olaindex.theme') . 'admin.edit', compact('file'));
         }
         $content = $request->get('content');
-        $response = OneDrive::getInstance(one_account())->upload($id, $content);
+        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->upload($id, $content);
         $response['errno'] === 0
             ? Tool::showMessage('修改成功！')
             : Tool::showMessage('修改失败！', false);
@@ -182,6 +186,7 @@ class ManageController extends Controller
      */
     public function createFolder(Request $request)
     {
+        $client_id = $request->route()->parameter('clientId', setting('main_client_id'));
         try {
             $path = decrypt($request->get('path'));
         } catch (DecryptException $e) {
@@ -191,7 +196,7 @@ class ManageController extends Controller
         }
         $name = $request->get('name');
         $graphPath = Tool::getOriginPath($path);
-        $response = OneDrive::getInstance(one_account())->mkdirByPath($name, $graphPath);
+        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->mkdirByPath($name, $graphPath);
         $response['errno'] === 0 ? Tool::showMessage('新建目录成功！')
             : Tool::showMessage('新建目录失败！', false);
         Cache::forget('one:list:' . Tool::getAbsolutePath($path));
@@ -207,6 +212,7 @@ class ManageController extends Controller
      */
     public function deleteItem($sign)
     {
+        $client_id = request()->route()->parameter('clientId', setting('main_client_id'));
         try {
             $deCode = decrypt($sign);
         } catch (DecryptException $e) {
@@ -223,7 +229,7 @@ class ManageController extends Controller
 
             return view(config('olaindex.theme') . 'message');
         }
-        $response = OneDrive::getInstance(one_account())->delete($id, $eTag);
+        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->delete($id, $eTag);
         $response['errno'] === 0
             ? Tool::showMessage('文件已删除')
             : Tool::showMessage('文件删除失败', false);
@@ -240,9 +246,10 @@ class ManageController extends Controller
      */
     public function copyItem(Request $request)
     {
+        $client_id = $request->route()->parameter('clientId', setting('main_client_id'));
         $itemId = $request->get('source_id');
         $parentItemId = $request->get('target_id');
-        $response = OneDrive::getInstance(one_account())->copy($itemId, $parentItemId);
+        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->copy($itemId, $parentItemId);
         if ($response['errno'] === 0) {
             return response()->json(
                 [
@@ -264,9 +271,10 @@ class ManageController extends Controller
      */
     public function moveItem(Request $request)
     {
+        $client_id = $request->route()->parameter('clientId', setting('main_client_id'));
         $itemId = $request->get('source_id');
         $parentItemId = $request->get('target_id');
-        $response = OneDrive::getInstance(one_account())->move($itemId, $parentItemId);
+        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->move($itemId, $parentItemId);
 
         if ($response['errno'] === 0) {
             return response()->json(
@@ -288,9 +296,10 @@ class ManageController extends Controller
      */
     public function uploadUrl(Request $request)
     {
+        $client_id = $request->route()->parameter('clientId', setting('main_client_id'));
         $remote = $request->get('path');
         $url = $request->get('url');
-        $response = OneDrive::getInstance(one_account())->uploadUrl($remote, $url);
+        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->uploadUrl($remote, $url);
 
         if ($response['errno'] === 0) {
             return response()->json(
@@ -313,8 +322,9 @@ class ManageController extends Controller
      */
     public function createShareLink(Request $request)
     {
+        $client_id = $request->route()->parameter('clientId', setting('main_client_id'));
         $itemId = $request->get('id');
-        $response = OneDrive::getInstance(one_account())->createShareLink($itemId);
+        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->createShareLink($itemId);
 
         if ($response['errno'] === 0) {
             return response()->json(
@@ -336,8 +346,9 @@ class ManageController extends Controller
      */
     public function deleteShareLink(Request $request)
     {
+        $client_id = $request->route()->parameter('clientId', setting('main_client_id'));
         $itemId = $request->get('id');
-        $response = OneDrive::getInstance(one_account())->deleteShareLink($itemId);
+        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->deleteShareLink($itemId);
 
         if ($response['errno'] === 0) {
             return response()->json(
@@ -359,9 +370,9 @@ class ManageController extends Controller
      */
     public function pathToItemId(Request $request)
     {
+        $client_id = $request->route()->parameter('clientId', setting('main_client_id'));
         $graphPath = Tool::getOriginPath($request->get('path'));
-
-        $response = OneDrive::getInstance(one_account())->pathToItemId($graphPath);
+        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->pathToItemId($graphPath);
 
         if ($response['errno'] === 0) {
             return response()->json(
