@@ -7,8 +7,8 @@ use App\Utils\Tool;
 Route::get('/oauth', 'OauthController@oauth')->name('oauth');
 
 // 缩略图
-Route::get('thumb/{id}/size/{size}', 'IndexController@thumb')->name('thumb');
-Route::get('thumb/{id}/{width}/{height}', 'IndexController@thumbCrop')->name('thumb_crop');
+Route::get('thumb/{clientId}/{id}/size/{size}', 'IndexController@thumb')->name('thumb');
+Route::get('thumb/{clientId}/{id}/{width}/{height}', 'IndexController@thumbCrop')->name('thumb_crop');
 
 // 搜索
 Route::any('search', 'IndexController@search')
@@ -55,7 +55,7 @@ Route::prefix('admin')->group(static function () {
     Route::any('refresh', 'AdminController@refresh')->name('admin.cache.refresh');
     Route::get('newbind', 'AdminController@newBind')->name('admin.bind.newbind');
     Route::post('newbind', 'AdminController@createBind')->name('admin.bind.createNewbind');
-
+    Route::get('usage', 'AdminController@usage')->name('admin.usage');
     // 文件夹操作
     Route::prefix('folder')->group(static function () {
         Route::post('lock', 'ManageController@lockFolder')->name('admin.lock');

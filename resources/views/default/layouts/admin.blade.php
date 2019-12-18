@@ -51,6 +51,7 @@
                         <a class="dropdown-item" href="{{ route('admin.show') }}">显示设置 </a>
                         <a class="dropdown-item" href="{{ route('admin.profile') }}">密码设置 </a>
                         <a class="dropdown-item" href="{{ route('admin.bind') }}">绑定设置 </a>
+                        <a class="dropdown-item" href="{{ route('admin.usage') }}">使用状况 </a>
                     </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -98,15 +99,6 @@
             <p>{{ session()->pull('alertMessage') }}</p>
         </div>
     @endif
-    {{-- <div class="bg-white">
-        <p class="text-center text-muted">{{ one_account('account_email') }}</p>
-        <p class="text-center">
-            <span class="text-info">状态: {{ one_info('state') }} &nbsp;&nbsp;</span>
-            <span class="text-danger">已使用: {{ one_info('used') }} &nbsp;&nbsp;</span>
-            <span class="text-warning">剩余: {{ one_info('remaining') }} &nbsp;&nbsp;</span>
-            <span class="text-success">全部: {{ one_info('total') }} &nbsp;&nbsp;</span>
-        </p>
-    </div> --}}
     <div class="card border-light mb-3">
         <div class="card-header">
             @yield('title')

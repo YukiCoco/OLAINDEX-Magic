@@ -187,4 +187,8 @@ class AdminController extends Controller
         session($data);
         return redirect()->route('oauth');
     }
+
+    public function usage(){
+        return view(config('olaindex.theme') . 'admin.usage');
+    }
 }

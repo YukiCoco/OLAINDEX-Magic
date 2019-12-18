@@ -46,7 +46,6 @@ class IndexController extends Controller
      * @var array
      */
     public $show = [];
-
     /**
      * IndexController constructor.
      */
@@ -378,9 +377,10 @@ class IndexController extends Controller
      * @return RedirectResponse
      * @throws ErrorException
      */
-    public function thumb($id, $size): RedirectResponse
+    public function thumb($id, $size, $clientId): RedirectResponse
     {
-        $response = OneDrive::getInstance(getOnedriveAccount(1))->thumbnails($id, $size);
+        $clientId = request()->route()->parameter('clientId', 1);
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->thumbnails($id, $size);
         if ($response['errno'] === 0) {
             $url = $response['data']['url'];
         } else {
@@ -400,9 +400,10 @@ class IndexController extends Controller
      * @return RedirectResponse
      * @throws ErrorException
      */
-    public function thumbCrop($id, $width, $height): RedirectResponse
+    public function thumbCrop($id, $width, $height, $clientId): RedirectResponse
     {
-        $response = OneDrive::getInstance(getOnedriveAccount(1))->thumbnails($id, 'large');
+        $clientId = request()->route()->parameter('clientId', 1);
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->thumbnails($id, 'large');
         if ($response['errno'] === 0) {
             $url = $response['data']['url'];
             @list($url, $tmp) = explode('&width=', $url);
@@ -425,6 +426,7 @@ class IndexController extends Controller
      */
     public function search(Request $request,$clientId = 1)
     {
+        $clientId = request()->route()->parameter('clientId', 1);
         if (!setting('open_search', 0)) {
             Tool::showMessage('搜索暂不可用', false);
             return view(config('olaindex.theme') . 'message');
@@ -433,7 +435,7 @@ class IndexController extends Controller
         $limit = $request->get('limit', 20);
         if ($keywords) {
             $path = Tool::encodeUrl($this->root);
-            $response = OneDrive::getInstance(getOnedriveAccount(1))->search($path, $keywords);
+            $response = OneDrive::getInstance(getOnedriveAccount($clientId))->search($path, $keywords);
             if ($response['errno'] === 0) {
                 // 过滤结果中的文件夹\过滤微软OneNote文件
                 $items = Arr::where($response['data'], static function ($value) {
@@ -460,11 +462,12 @@ class IndexController extends Controller
      */
     public function searchShow($id,$clientId = 1): RedirectResponse
     {
+        $clientId = request()->route()->parameter('clientId', 1);
         if (!setting('open_search', 0)) {
             Tool::showMessage('搜索暂不可用', false);
             return view(config('olaindex.theme') . 'message');
         }
-        $response = OneDrive::getInstance(getOnedriveAccount(1))->itemIdToPath($id, setting('root'));
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->itemIdToPath($id, setting('root'));
         if ($response['errno'] === 0) {
             $originPath = $response['data']['path'];
             if (trim($this->root, '/') !== '') {

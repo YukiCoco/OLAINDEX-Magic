@@ -118,15 +118,15 @@ if (!function_exists('one_info')) {
      * @return array|\Illuminate\Support\Collection|mixed
      * @throws ErrorException
      */
-    function one_info($key = '')
+    function one_info($key = '',$clientId)
     {
         //return [];
-        if (refresh_token()) {
+        if (refresh_token($clientId)) {
             $quota = Cache::remember(
-                'one:quota',
+                'one:'. $clientId .':quota',
                 setting('expires'),
-                static function () {
-                    $response = OneDrive::getInstance(one_account())->getDriveInfo();
+                static function ()use($clientId) {
+                    $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getDriveInfo();
                     if ($response['errno'] === 0) {
                         $quota = $response['data']['quota'];
                         foreach ($quota as $k => $item) {
