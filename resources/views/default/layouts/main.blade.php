@@ -83,8 +83,7 @@
         <div class="row text-center">
             <div class="col-lg-12">
                 <p class="text-muted">
-                    {!! \App\Utils\Tool::markdown2Html(setting('copyright','Designed
-                    by [IMWNK](https://imwnk.cn/) | Powered by [OLAINDEX](https://git.io/OLAINDEX)'),true) !!}.
+                    {!! \App\Utils\Tool::markdown2Html(setting('copyright','Designed by [IMWNK](https://imwnk.cn/) | Moded by [Yukino](https://yukino.co/) | Powered by [OLAINDEX-MOD](https://github.com/YukiCoco/OLAINDEX-MOD)'),true) !!}.
                 </p>
             </div>
         </div>

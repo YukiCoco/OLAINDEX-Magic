@@ -13,7 +13,9 @@
 @section('js')
     <script src="https://cdn.staticfile.org/dropzone/5.5.1/min/dropzone.min.js"></script>
     <script>
-        Dropzone.options.fileDropzone = {
+        // Disable auto discover for all elements:
+        Dropzone.autoDiscover = false;
+        var fileDropzone = new Dropzone("#file-dropzone", {
             url: Config.routes.upload_file,
             method: 'post',
             maxFilesize: 4,
@@ -21,13 +23,13 @@
             maxFiles: 10,
             addRemoveLinks: true,
             init: function () {
-                this.on('sending', function (file, xhr, formData) {
-                    formData.append('_token', Config._token);
-                    formData.append('root', $('#target_directory').val());
-                });
-                this.on('success', function () {
-                    swal('上传成功', '文件已上传至OneDrive', 'success');
-                });
+            this.on('sending', function (file, xhr, formData) {
+            formData.append('_token', Config._token);
+            formData.append('root', $('#target_directory').val());
+            });
+            this.on('success', function () {
+            swal('上传成功', '文件已上传至OneDrive', 'success');
+            });
             },
             dictDefaultMessage: '拖拽文件至此上传 (最大支持4M)',
             dictFallbackMessage: '浏览器不支持拖拽上传',
@@ -40,11 +42,22 @@
             dictRemoveFile: '移除此文件',
             dictRemoveFileConfirmation: '确定移除此文件吗',
             dictMaxFilesExceeded: '已达到最大上传数.',
-        };
+            });
+        function onSelectChanged() {
+            clientId = $('select').find('option:selected').val();
+            refreshConfig();
+            fileDropzone.options.url = Config.routes.upload_file; //上传分区
+        }
     </script>
 @stop
 @section('content')
     <div class="form-group">
+        <label class="form-control-label" for="target_directory">选择分区</label>
+        <select onchange="onSelectChanged()" class="form-control" style="margin-bottom:4px">
+            @foreach (getOnedriveAccounts() as $item)
+        <option value="{{ $item->id }}">{{ $item->nick_name }}</option>
+            @endforeach
+        </select>
         <label class="form-control-label" for="target_directory">上传目录</label>
         <input type="text" class="form-control" id="target_directory" name="target_directory"
                placeholder="在此输入要上传的目录位置（默认 OneDrive 根目录）">

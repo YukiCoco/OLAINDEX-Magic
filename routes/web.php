@@ -29,7 +29,7 @@ Route::get('image', 'ImageController@index')->name('image');
 Route::post('image-upload', 'ImageController@upload')->name('image.upload');
 
 //删除
-Route::get('file/delete/{sign}', 'ManageController@deleteItem')->name('delete');
+Route::get('file/delete/{client_id?}/{sign}', 'ManageController@deleteItem')->name('delete');
 
 //后台设置管理
 Route::get('login', 'LoginController@showLoginForm')->name('login');
@@ -64,21 +64,21 @@ Route::prefix('admin')->group(static function () {
     // 文件操作
     Route::prefix('file')->group(static function () {
         Route::get('/', 'ManageController@uploadFile')->name('admin.file');
-        Route::post('upload', 'ManageController@uploadFile')
+        Route::post('upload/{clientId?}', 'ManageController@uploadFile')
             ->name('admin.file.upload');
-        Route::any('add', 'ManageController@createFile')
+        Route::any('add/{clientId?}', 'ManageController@createFile')
             ->name('admin.file.create');
-        Route::any('edit/{id}', 'ManageController@updateFile')
+        Route::any('edit/{id}/{clientId?}', 'ManageController@updateFile')
             ->name('admin.file.update');
         Route::view('other', config('olaindex.theme') . 'admin.other')
             ->name('admin.other');
-        Route::post('copy', 'ManageController@copyItem')->name('admin.copy');
-        Route::post('move', 'ManageController@moveItem')->name('admin.move');
-        Route::post('file/path2id', 'ManageController@pathToItemId')
+        Route::post('copy/{clientId?}', 'ManageController@copyItem')->name('admin.copy');
+        Route::post('move/{clientId?}', 'ManageController@moveItem')->name('admin.move');
+        Route::post('file/path2id/{clientId?}', 'ManageController@pathToItemId')
             ->name('admin.path2id');
-        Route::post('share', 'ManageController@createShareLink')
+        Route::post('share/{clientId?}', 'ManageController@createShareLink')
             ->name('admin.share');
-        Route::post('share/delete', 'ManageController@deleteShareLink')
+        Route::post('share/delete/{clientId?}', 'ManageController@deleteShareLink')
             ->name('admin.share.delete');
     });
     // 离线上传

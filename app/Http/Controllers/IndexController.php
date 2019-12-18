@@ -92,7 +92,7 @@ class IndexController extends Controller
      */
     public function list(Request $request)
     {
-        $clientId = $request->route()->parameter('clientId', 1);
+        $clientId = $request->route()->parameter('clientId', setting('main_client_id'));
         // 处理路径
         $requestPath = $request->route()->parameter('query', '/');
         $graphPath = Tool::getOriginPath($requestPath);
@@ -379,7 +379,7 @@ class IndexController extends Controller
      */
     public function thumb($id, $size, $clientId): RedirectResponse
     {
-        $clientId = request()->route()->parameter('clientId', 1);
+        $clientId = request()->route()->parameter('clientId', setting('main_client_id'));
         $response = OneDrive::getInstance(getOnedriveAccount($clientId))->thumbnails($id, $size);
         if ($response['errno'] === 0) {
             $url = $response['data']['url'];
@@ -402,7 +402,7 @@ class IndexController extends Controller
      */
     public function thumbCrop($id, $width, $height, $clientId): RedirectResponse
     {
-        $clientId = request()->route()->parameter('clientId', 1);
+        $clientId = request()->route()->parameter('clientId', setting('main_client_id'));
         $response = OneDrive::getInstance(getOnedriveAccount($clientId))->thumbnails($id, 'large');
         if ($response['errno'] === 0) {
             $url = $response['data']['url'];
@@ -426,7 +426,7 @@ class IndexController extends Controller
      */
     public function search(Request $request,$clientId = 1)
     {
-        $clientId = request()->route()->parameter('clientId', 1);
+        $clientId = request()->route()->parameter('clientId', setting('main_client_id'));
         if (!setting('open_search', 0)) {
             Tool::showMessage('搜索暂不可用', false);
             return view(config('olaindex.theme') . 'message');
@@ -462,7 +462,7 @@ class IndexController extends Controller
      */
     public function searchShow($id,$clientId = 1): RedirectResponse
     {
-        $clientId = request()->route()->parameter('clientId', 1);
+        $clientId = request()->route()->parameter('clientId', setting('main_client_id'));
         if (!setting('open_search', 0)) {
             Tool::showMessage('搜索暂不可用', false);
             return view(config('olaindex.theme') . 'message');

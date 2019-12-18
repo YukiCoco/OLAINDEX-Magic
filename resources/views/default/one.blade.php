@@ -70,7 +70,7 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
-                    window.open('/file/delete/' + $sign, '_blank');
+                    window.open('/file/delete/'+ '{{ $clientId }}/' + $sign, '_blank');
                 } else if (result.dismiss === swal.DismissReason.cancel) {
                     swal('已取消', '文件安全 :)', 'error');
                 }
