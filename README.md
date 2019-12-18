@@ -1,4 +1,4 @@
-# OLAINDEX
+# OLAINDEX Magic
 
 ✨ Another OneDrive Directory Index.
 
