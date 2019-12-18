@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Middleware;
 
 use App\Utils\Tool;
@@ -37,7 +36,6 @@ class VerifyAccessToken
             //     return $oauth->refreshToken(true,$account);
             // }
             refresh_token($account->id);
-            refreshOnedriveAccounts();
         }
         return $next($request);
     }

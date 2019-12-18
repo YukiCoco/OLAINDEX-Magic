@@ -30,7 +30,7 @@ class OauthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('verify.installation');
+        //$this->middleware('verify.installation');
     }
 
     /**
@@ -82,6 +82,10 @@ class OauthController extends Controller
             ]);
             OnedriveAccount::firstOrCreate($data);
             Tool::refreshAccount($account);
+            Tool::showMessage('绑定成功', true);
+            if(!Tool::hasConfig()){ //第一次绑定
+                setSetting('has_config','true');
+            }
             return redirect()->route('admin.show');
         }
         Tool::showMessage('Invalid Request', false);

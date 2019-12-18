@@ -97,11 +97,10 @@ class InstallController extends Controller
      *
      * @return RedirectResponse
      */
-    public function reset(): RedirectResponse
+    public function reset()
     {
-        if (Tool::hasBind()) {
+        if (Tool::hasConfig()) {
             Tool::showMessage('您已绑定帐号，无法重置', false);
-
             return view(config('olaindex.theme') . 'message');
         }
         $data = [
@@ -110,8 +109,8 @@ class InstallController extends Controller
             'redirect_uri' => '',
             'account_type' => '',
         ];
-        Setting::batchUpdate($data);
-
+        //Setting::batchUpdate($data);
+        session($data);
         return redirect()->route('_1stInstall');
     }
 
@@ -124,17 +123,27 @@ class InstallController extends Controller
      */
     public function bind(Request $request)
     {
-        if (Tool::hasBind()) {
+        if (Tool::hasConfig()) {
             Tool::showMessage('您已绑定帐号', false);
-
             return view(config('olaindex.theme') . 'message');
         }
         if ($request->isMethod('post')) {
-            if (Tool::hasBind()) {
-                Tool::showMessage('您已绑定帐号，无法重置', false);
-
-                return view(config('olaindex.theme') . 'message');
+            $client_id = $request->get('client_id');
+            $client_secret = $request->get('client_secret');
+            $redirect_uri = $request->get('redirect_uri');
+            $account_type = $request->get('account_type');
+            if (empty($client_id) || empty($client_secret) || empty($redirect_uri)) {
+                Tool::showMessage('参数请填写完整', false);
+                return redirect()->back();
             }
+            // 写入配置
+            $data = [
+                'client_id' => $client_id,
+                'client_secret' => $client_secret,
+                'redirect_uri' => $redirect_uri,
+                'account_type' => $account_type,
+            ];
+            session($data);
             return redirect()->route('oauth');
         }
         return view(config('olaindex.theme') . 'install.bind');

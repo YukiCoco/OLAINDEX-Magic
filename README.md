@@ -1,3 +1,11 @@
+<!--
+ * @Author: your name
+ * @Date: 2019-12-17 19:36:27
+ * @LastEditTime: 2019-12-18 21:45:32
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: /onedrive/README.md
+ -->
 # OLAINDEX
 
 ✨ Another OneDrive Directory Index.
@@ -12,4 +20,5 @@
 （只不过是在大佬的作品上胡乱涂画罢了。
 ## 魔改功能
 
-- 获取所有下载链接
+- 多网盘账户支持
+- 其他功能：

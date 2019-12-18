@@ -103,7 +103,7 @@ class Tool
      */
     public static function hasConfig(): bool
     {
-        return 1 == 1;
+        return setting('has_config') == 'true';
         //return setting('client_id') && setting('client_secret') && setting('redirect_uri');
     }
 

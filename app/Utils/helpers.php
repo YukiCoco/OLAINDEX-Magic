@@ -22,7 +22,7 @@ if (!function_exists('is_json')) {
 
 if (!function_exists('setting')) {
     /**
-     * 获取设置
+     * 获取设置或修改设置
      * @param $key
      * @param string $default
      * @return mixed
@@ -42,7 +42,14 @@ if (!function_exists('setting')) {
             return $data;
         });
         $setting = collect($setting);
-        return $key ? $setting->get($key, $default) : $setting;
+        return $key ? $setting->get($key,$default) : $setting;
+    }
+}
+
+if(!function_exists('setSetting')){
+    function setSetting($key,$value){
+        DB::table('settings')->where('name', $key)->update(['value' => $value]);
+        \Cache::forget('setting'); //刷新
     }
 }
 
@@ -161,8 +168,8 @@ if (!function_exists('refresh_token')) {
         if ($hasExpired) {
             $oauth = new OauthController();
             $res = json_decode($oauth->refreshToken(false,getOnedriveAccount($id)), true);
-
             return $res['code'] === 200;
+            refreshOnedriveAccounts();
         }
         return true;
     }
