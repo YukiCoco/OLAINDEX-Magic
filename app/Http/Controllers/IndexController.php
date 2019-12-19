@@ -80,7 +80,7 @@ class IndexController extends Controller
             }
             return view(config('olaindex.theme') . 'image');
         }
-        return redirect()->route('home');
+        return redirect()->route('home',['clientId' => setting('main_client_id')]);
     }
 
     /**
