@@ -1,6 +1,6 @@
 <nav aria-label="breadcrumb" class="d-none d-md-block d-md-none">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('home') }}"><i class="fa fa-home"></i> Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('home',['clientId' => $clientId]) }}"><i class="fa fa-home"></i> Home</a></li>
         @if(!blank($pathArray))
             @if (count($pathArray) < 5)
                 @foreach ($pathArray as $key => $value)
