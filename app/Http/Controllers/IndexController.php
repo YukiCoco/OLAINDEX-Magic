@@ -102,11 +102,9 @@ class IndexController extends Controller
 
         // 获取资源缓存
         $pathKey = 'one:' . (string)$clientId . ':path:' . $graphPath;
-        Log::debug($pathKey);
 
         if (Cache::has($pathKey)) {
             $item = Cache::get($pathKey);
-            Log::debug($item);
         } else {
             $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getItemByPath($graphPath);
             if ($response['errno'] === 0) {
