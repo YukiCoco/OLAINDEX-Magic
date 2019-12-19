@@ -1,4 +1,12 @@
 <?php
+/*
+ * @Author: your name
+ * @Date: 2019-12-19 00:03:57
+ * @LastEditTime : 2019-12-19 19:27:57
+ * @LastEditors  : Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /onedrive/app/Http/Controllers/ImageController.php
+ */
 
 
 namespace App\Http\Controllers;
@@ -78,7 +86,7 @@ class ImageController extends Controller
                         'size' => $response['data']['size'],
                         'time' => $response['data']['lastModifiedDateTime'],
                         'url' => route('view', ['query' => $filePath,'clientId' => $clientId]),
-                        'delete' => route('delete', $fileIdentifier),
+                        'delete' => route('delete', ['sign' => $fileIdentifier,'clientId' => $clientId]),
                     ],
                 ];
                 @unlink($path);

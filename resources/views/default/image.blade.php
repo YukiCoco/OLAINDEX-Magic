@@ -178,32 +178,32 @@
         <div id="navTabContent" class="tab-content">
             <div class="tab-pane fade in active show" id="urlPanel">
                 <div class="link-container" id="urlCode">
-                    <a onclick="onCopyBtnClicked('urlCode') " href="#">[复制内容]</a>
+                    <a onclick="onCopyBtnClicked('urlCode') " href="javascript:void(0);">[复制内容]</a>
                 </div>
             </div>
             <div class="tab-pane fade" id="htmlPanel">
                 <div class="link-container" id="htmlCode">
-                    <a onclick="onCopyBtnClicked('htmlCode')" href="#">[复制内容]</a>
+                    <a onclick="onCopyBtnClicked('htmlCode')" href="javascript:void(0);">[复制内容]</a>
                 </div>
             </div>
             <div class="tab-pane fade" id="bbPanel">
                 <div class="link-container" id="bbCode">
-                    <a onclick="onCopyBtnClicked('bbCode')" href="#">[复制内容]</a>
+                    <a onclick="onCopyBtnClicked('bbCode')" href="javascript:void(0);">[复制内容]</a>
                 </div>
             </div>
             <div class="tab-pane fade" id="markdownPanel">
                 <div class="link-container" id="markdown">
-                    <a onclick="onCopyBtnClicked('markdown')" href="#">[复制内容]</a>
+                    <a onclick="onCopyBtnClicked('markdown')" href="javascript:void(0);">[复制内容]</a>
                 </div>
             </div>
             <div class="tab-pane fade" id="markdownLinkPanel">
                 <div class="link-container" id="markdownLinks">
-                    <a onclick="onCopyBtnClicked('markdownLinks')" href="#">[复制内容]</a>
+                    <a onclick="onCopyBtnClicked('markdownLinks')" href="javascript:void(0);">[复制内容]</a>
                 </div>
             </div>
             <div class="tab-pane fade" id="deletePanel">
                 <div class="link-container" id="deleteCode">
-                    <a onclick="onCopyBtnClicked('deleteCode')" href="#">[复制内容]</a>
+                    <a onclick="onCopyBtnClicked('deleteCode')" href="javascript:void(0);">[复制内容]</a>
                 </div>
             </div>
         </div>
