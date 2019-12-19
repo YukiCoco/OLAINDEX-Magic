@@ -81,10 +81,7 @@ if(!function_exists('getOnedriveAccount')){
      * @return: array
      */
     function getOnedriveAccount($id = 1,$key = ''){
-        $accounts = \Cache::remember('onedrive_accounts', 60*60,function () {
-            return OnedriveAccount::all();
-        });
-        $account = $accounts->where('id',$id)->first();
+        $account = OnedriveAccount::where('id',$id)->first();
         return $key ? $account->get($key, '') : $account->toArray();
     }
 }
@@ -97,24 +94,22 @@ if(!function_exists('getOnedriveAccounts')){
      * @return:
      */
     function getOnedriveAccounts(){
-        $accounts = \Cache::remember('onedrive_accounts', 60*60,function () {
-            return OnedriveAccount::all();
-        });
+        $accounts = OnedriveAccount::all();
         return $accounts;
     }
 }
 
-if(!function_exists('refreshOnedriveAccounts')){
-    /**
-     * @description: 从缓存中刷新所有onedrive账户
-     * @param {type}
-     * @return:
-     */
-    function refreshOnedriveAccounts(){
-        \Cache::forget('onedrive_accounts');
-        \Cache::put('onedrive_accounts', OnedriveAccount::all(), 60*60);
-    }
-}
+// if(!function_exists('refreshOnedriveAccounts')){
+//     /**
+//      * @description: 从缓存中刷新所有onedrive账户
+//      * @param {type}
+//      * @return:
+//      */
+//     function refreshOnedriveAccounts(){
+//         \Cache::forget('onedrive_accounts');
+//         \Cache::put('onedrive_accounts', OnedriveAccount::all(), 60*60);
+//     }
+// }
 
 if (!function_exists('one_info')) {
 
@@ -165,7 +160,6 @@ if (!function_exists('refresh_token')) {
         if ($hasExpired) {
             $oauth = new OauthController();
             $res = json_decode($oauth->refreshToken(false,getOnedriveAccount($id)), true);
-            refreshOnedriveAccounts();
             return $res['code'] === 200;
         }
         return true;
