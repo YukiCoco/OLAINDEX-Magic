@@ -127,28 +127,25 @@ if (!function_exists('one_info')) {
     function one_info($key = '',$clientId)
     {
         //return [];
-        if (refresh_token(getOnedriveAccount($clientId))) {
-            $quota = Cache::remember(
-                'one:'. $clientId .':quota',
-                setting('expires'),
-                static function ()use($clientId) {
-                    $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getDriveInfo();
-                    if ($response['errno'] === 0) {
-                        $quota = $response['data']['quota'];
-                        foreach ($quota as $k => $item) {
-                            if (!is_string($item)) {
-                                $quota[$k] = Tool::convertSize($item);
-                            }
+        $quota = Cache::remember(
+            'one:'. $clientId .':quota',
+            setting('expires'),
+            static function ()use($clientId) {
+                $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getDriveInfo();
+                if ($response['errno'] === 0) {
+                    $quota = $response['data']['quota'];
+                    foreach ($quota as $k => $item) {
+                        if (!is_string($item)) {
+                            $quota[$k] = Tool::convertSize($item);
                         }
-                        return $quota;
                     }
-                    return [];
+                    return $quota;
                 }
-            );
-            $info = collect($quota);
-            return $key ? $info->get($key, '') : $info;
-        }
-        return [];
+                return [];
+            }
+        );
+        $info = collect($quota);
+        return $key ? $info->get($key, '') : $info;
     }
 }
 
