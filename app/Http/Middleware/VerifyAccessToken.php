@@ -1,4 +1,12 @@
 <?php
+/*
+ * @Author: your name
+ * @Date: 2019-12-19 00:03:57
+ * @LastEditTime: 2019-12-19 18:47:15
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: /onedrive/app/Http/Middleware/VerifyAccessToken.php
+ */
 namespace App\Http\Middleware;
 
 use App\Utils\Tool;
@@ -35,7 +43,7 @@ class VerifyAccessToken
 
             //     return $oauth->refreshToken(true,$account);
             // }
-            refresh_token($account->id);
+            refresh_token($account);
         }
         return $next($request);
     }

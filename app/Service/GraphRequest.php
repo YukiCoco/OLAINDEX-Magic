@@ -140,6 +140,7 @@ class GraphRequest
                     'headers' => $curl->responseHeaders
                 ]
             );
+            Log::error('当前的AccessToken：'.$this->accessToken);
             $this->responseError = collect([
                 'errno' => $curl->errorCode,
                 'msg' => $curl->errorMessage,

@@ -105,7 +105,6 @@ if(!function_exists('getOnedriveAccounts')){
 }
 
 if(!function_exists('refreshOnedriveAccounts')){
-
     /**
      * @description: 从缓存中刷新所有onedrive账户
      * @param {type}
@@ -128,7 +127,7 @@ if (!function_exists('one_info')) {
     function one_info($key = '',$clientId)
     {
         //return [];
-        if (refresh_token($clientId)) {
+        if (refresh_token(getOnedriveAccount($clientId))) {
             $quota = Cache::remember(
                 'one:'. $clientId .':quota',
                 setting('expires'),
@@ -160,16 +159,16 @@ if (!function_exists('refresh_token')) {
      * @return bool
      * @throws ErrorException
      */
-    function refresh_token($id)
+    function refresh_token($account)
     {
-        $expires = setting('access_token_expires', 0);
+        $expires = $account->access_token_expires;
         $expires = strtotime($expires);
         $hasExpired = $expires - time() <= 0;
         if ($hasExpired) {
             $oauth = new OauthController();
             $res = json_decode($oauth->refreshToken(false,getOnedriveAccount($id)), true);
-            return $res['code'] === 200;
             refreshOnedriveAccounts();
+            return $res['code'] === 200;
         }
         return true;
     }
