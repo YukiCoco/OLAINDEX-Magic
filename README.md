@@ -12,6 +12,7 @@
 
 ## 安装方法
 [https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md)
+
 **持续更新中，请直接拉取Master分支部署，欢迎提交issue，欢迎star**
 ## 魔改内容
 
