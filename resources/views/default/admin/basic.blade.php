@@ -142,10 +142,9 @@
         </div>
         <div class="form-group">
             <label class="form-control-label" for="disk_selector">在首页展示的盘区</label>
-            <input type="hidden" id="disk_main" name="main_client_id">
-            <select onchange="onSelectChanged()" id="disk_selector" class="form-control">
+            <select class="custom-select" name="main_client_id" id="disk_selector">
                 @foreach (getOnedriveAccounts() as $item)
-            <option value="{{ $item->id }}">{{ $item->nick_name }}</option>
+                <option value="{{ $item->id }}">{{ $item->nick_name }}</option>
                 @endforeach
             </select>
         </div>
