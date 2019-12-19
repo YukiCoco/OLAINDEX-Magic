@@ -1,4 +1,4 @@
-# OLAINDEX
+# OLAINDEX Magic
 
 ✨ Another OneDrive Directory Index.
 
@@ -8,15 +8,18 @@
 
 ## 简介
 魔改自：[https://github.com/WangNingkai/OLAINDEX](https://github.com/WangNingkai/OLAINDEX)
-
 （只不过是在大佬的作品上狗续貂尾罢了。
+
+## 安装方法
+[https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md)
+
 ## 魔改内容
 
 + 多Onedrive账户支持：
     + 同时挂载多个Onedrive网盘
     + 图床可选择上传到不同的盘区
 + 一些小功能
-    + 为批量下载添加一键获取链接
+    + 添加一键获取下载链接
     + 图床复制按钮
     + 视需求而添加......
 
