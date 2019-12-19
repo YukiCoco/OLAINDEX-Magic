@@ -161,6 +161,7 @@ if (!function_exists('refresh_token')) {
      */
     function refresh_token($account)
     {
+        $id = $account->id;
         $expires = $account->access_token_expires;
         $expires = strtotime($expires);
         $hasExpired = $expires - time() <= 0;
