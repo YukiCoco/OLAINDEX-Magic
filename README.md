@@ -12,7 +12,7 @@
 
 演示站点：[https://magic.yukino.co/](https://magic.yukino.co/)
 ## 安装方法
-[https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md)
+原教程：[https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md)
 
 绑定&使用多账户：[https://yukino.co/archives/95.html](https://yukino.co/archives/95.html)
 
