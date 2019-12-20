@@ -157,6 +157,7 @@ class ManageController extends Controller
     public function updateFile(Request $request)
     {
         $client_id = $request->route()->parameter('clientId');
+        $id = $request->route()->parameter('id');
         if (!$request->isMethod('post')) {
             $response = OneDrive::getInstance(getOnedriveAccount($client_id))->getItem($id);
             if ($response['errno'] === 0) {
@@ -166,7 +167,6 @@ class ManageController extends Controller
                 Tool::showMessage('获取文件失败', false);
                 $file = '';
             }
-
             return view(config('olaindex.theme') . 'admin.edit', compact('file'));
         }
         $content = $request->get('content');

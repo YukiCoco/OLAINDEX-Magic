@@ -68,7 +68,7 @@ Route::prefix('admin')->group(static function () {
             ->name('admin.file.upload');
         Route::any('add/{clientId?}', 'ManageController@createFile')
             ->name('admin.file.create');
-        Route::any('edit/{id}/{clientId?}', 'ManageController@updateFile')
+        Route::any('edit/{clientId?}/{id}', 'ManageController@updateFile')
             ->name('admin.file.update');
         Route::view('other', config('olaindex.theme') . 'admin.other')
             ->name('admin.other');

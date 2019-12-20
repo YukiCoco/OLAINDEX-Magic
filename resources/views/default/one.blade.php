@@ -126,7 +126,7 @@
                     <div class="dropdown-menu" aria-labelledby="actionDropdownLink">
                         @if(auth()->user())
                         @if (array_key_exists('README.md', $originItems))
-                        <a class="dropdown-item" href="{{ route('admin.file.update',$originItems['README.md']['id']) }}"><i
+                        <a class="dropdown-item" href="{{ route('admin.file.update',['clientId' => $clientId,'id' => $originItems['README.md']['id']]) }}"><i
                                 class="fa fa-pencil-square-o"></i> 编辑 README</a>
                         @else
                         <a class="dropdown-item"
@@ -134,11 +134,11 @@
                                 class="fa fa-plus-circle"></i> 添加 README</a>
                         @endif
                         @if (array_key_exists('HEAD.md', $originItems))
-                        <a class="dropdown-item" href="{{ route('admin.file.update',$originItems['HEAD.md']['id']) }}"><i
+                        <a class="dropdown-item" href="{{ route('admin.file.update',['clientId' => $clientId,'id' => $originItems['HEAD.md']['id']]) }}"><i
                                 class="fa fa-pencil-square-o"></i> 编辑 HEAD</a>
                         @else
                         <a class="dropdown-item"
-                            href="{{ route('admin.file.create',['name' => 'HEAD', 'path' => encrypt($originPath)]) }}"><i
+                            href="{{ route('admin.file.create',['clientId' => $clientId, 'name' => 'HEAD', 'path' => encrypt($originPath)]) }}"><i
                                 class="fa fa-plus-circle"></i> 添加 HEAD</a>
                         @endif
                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#newFolderModal"><i
@@ -256,7 +256,7 @@
                                                 class="fa fa-eye"></i></a>&nbsp;&nbsp;
                                     @endif
                                     @if(Auth::user() && \App\Utils\Tool::canEdit($item) )
-                                        <a href="{{ route('admin.file.update',$item['id']) }}"><i
+                                        <a href="{{ route('admin.file.update',['clientId' => $clientId,'id' => $item['id']]) }}"><i
                                                 class="fa fa-pencil"></i></a>&nbsp;&nbsp;
                                     @endif
                                     <a class="download_url"

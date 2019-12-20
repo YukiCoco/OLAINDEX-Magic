@@ -144,10 +144,10 @@ class IndexController extends Controller
 
         // 处理 head/readme
         $head = array_key_exists('HEAD.md', $originItems)
-            ? Tool::getFileContent($originItems['HEAD.md']['@microsoft.graph.downloadUrl'], $graphPath . ':head')
+            ? Tool::getFileContent($originItems['HEAD.md']['@microsoft.graph.downloadUrl'], $graphPath .':' .$clientId. ':head')
             : '';
         $readme = array_key_exists('README.md', $originItems)
-            ? Tool::getFileContent($originItems['README.md']['@microsoft.graph.downloadUrl'], $graphPath . ':readme')
+            ? Tool::getFileContent($originItems['README.md']['@microsoft.graph.downloadUrl'], $graphPath .':' .$clientId. ':readme')
             : '';
         // 过滤微软OneNote文件
         $originItems = Arr::where($originItems, static function ($value) {
