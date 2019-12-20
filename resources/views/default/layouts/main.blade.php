@@ -34,7 +34,7 @@
 <body>
 <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-primary">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('home') }}">{{ setting('name','OLAINDEX') }}</a>
+        <a class="navbar-brand" href="{{ route('home',['clientId' => setting('main_client_id')]) }}">{{ setting('name','OLAINDEX') }}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
                 aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -47,9 +47,6 @@
                     <a class="nav-link" href="{{ route('home',['clientId' => $drive['id']]) }}"><i class="fa fa-hdd-o"></i> {{$drive['nick_name']}}</a>
                 </li>
                 @endforeach
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('home') }}"><i class="fa fa-home"></i> 首页</a>
-                </li>
                 @if( (int)setting('image_hosting') === 1 || ((int)setting('image_hosting') === 2 && auth()->user()))
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('image') }}"><i class="fa fa-cloud-upload"></i> 图床</a>

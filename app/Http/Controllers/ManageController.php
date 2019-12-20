@@ -142,7 +142,7 @@ class ManageController extends Controller
         $response = OneDrive::getInstance(getOnedriveAccount($client_id))->uploadByPath($remoteFilePath, $content);
         $response['errno'] === 0 ? Tool::showMessage('添加成功！')
             : Tool::showMessage('添加失败！', false);
-        Cache::forget('one:list:' . Tool::getAbsolutePath($path));
+        Cache::forget('one:'. $client_id .':list:' . Tool::getAbsolutePath($path));
 
         return redirect()->route('home', Tool::encodeUrl($path));
     }

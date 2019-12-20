@@ -130,7 +130,7 @@
                                 class="fa fa-pencil-square-o"></i> 编辑 README</a>
                         @else
                         <a class="dropdown-item"
-                            href="{{ route('admin.file.create',['name' => 'README', 'path' => encrypt($originPath)]) }}"><i
+                            href="{{ route('admin.file.create',['clientId' => $clientId,'name' => 'README', 'path' => encrypt($originPath)]) }}"><i
                                 class="fa fa-plus-circle"></i> 添加 README</a>
                         @endif
                         @if (array_key_exists('HEAD.md', $originItems))
@@ -143,14 +143,12 @@
                         @endif
                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#newFolderModal"><i
                                 class="fa fa-plus-circle"></i> 新建目录</a>
-                        <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#directLinkModal"><i
-                                class="fa fa-link"></i> 导出直链</a>
                         @endif
                         @if (setting('export_download'))
                         <a class="dropdown-item" href="javascript:void(0)" data-toggle="modal" data-target="#directLinkModal"><i
                             class="fa fa-link"></i> 导出直链</a>
                         @endif
-                        <a class="dropdown-item" href="#" onclick="getAllDLLinks()"><i class="fa fa-clipboard"></i> 复制所有下载链接</a>
+                        <a class="dropdown-item" href="javascript:void(0);" onclick="getAllDLLinks()"><i class="fa fa-clipboard"></i> 复制所有下载链接</a>
                     </div>
                     <div class="modal fade" id="newFolderModal" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog" role="document">

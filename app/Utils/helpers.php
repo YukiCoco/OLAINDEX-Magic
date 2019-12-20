@@ -29,7 +29,7 @@ if (!function_exists('setting')) {
      */
     function setting($key = '', $default = '')
     {
-        $setting = \Cache::remember('setting', 60 * 60, static function () {
+        $setting = \Cache::remember('setting', 60 * 60, static function () use($key) {
             try {
                 $setting = Setting::all()->toArray();
             } catch (Exception $e) {
@@ -38,6 +38,10 @@ if (!function_exists('setting')) {
             $data = [];
             foreach ($setting as $detail) {
                 $data[$detail['name']] = $detail['value'];
+            }
+            if(!array_key_exists($key,$data)){
+                setSetting($key,'');
+                $data[$key] = '';
             }
             return $data;
         });
