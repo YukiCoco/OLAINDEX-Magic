@@ -212,8 +212,13 @@ class ManageController extends Controller
      */
     public function deleteItem(Request $request)
     {
-        $sign = $request->sign;
-        $clientId = $request->clientId;
+        if($request->isMethod('get')){
+        $sign = $request->route()->parameter('sign');
+        $clientId = $request->route()->parameter('clientId');
+        } else{
+            $sign = $request->sign;
+            $clientId = $request->clientId;
+        }
         try {
             $deCode = decrypt($sign);
         } catch (DecryptException $e) {
