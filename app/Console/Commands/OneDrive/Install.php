@@ -60,7 +60,7 @@ class Install extends Command
             $this->warn('[.env.example] file missing,Please make sure the project complete!');
             exit;
         }
-        $app_url = $this->ask('Bind Domain(For Authorize)');
+        $app_url = $this->ask('Bind Domain(For Authorize) 注意带上https://');
         $search_db = [
             'APP_KEY=',
             'APP_URL=http://localhost:8000',
