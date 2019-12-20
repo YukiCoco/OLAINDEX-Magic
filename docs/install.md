@@ -7,7 +7,7 @@
 
 ```bash
 cd web目录
-git clone https://github.com/WangNingkai/OLAINDEX.git tmp 
+git clone https://github.com/YukiCoco/OLAINDEX-Magic.git tmp 
 mv tmp/.git . 
 rm -rf tmp 
 git reset --hard 
