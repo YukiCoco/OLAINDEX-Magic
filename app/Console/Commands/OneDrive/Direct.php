@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Console\Commands\OneDrive;
 
 use App\Service\OneDrive;
@@ -13,7 +12,7 @@ class Direct extends Command
      *
      * @var string
      */
-    protected $signature = 'od:direct {remote : RemotePath}';
+    protected $signature = 'od:direct {clientId : Onedrive Id} {remote : RemotePath}';
 
     /**
      * The console command description.
@@ -37,12 +36,13 @@ class Direct extends Command
      */
     public function handle()
     {
-        $this->call('od:refresh');
         $this->info('Please waiting...');
         $remote = $this->argument('remote');
-        $_remote = OneDrive::getInstance(one_account())->pathToItemId($remote);
+        $clientId = $this->argument('clientId');
+        refresh_token(getOnedriveAccount($clientId));
+        $_remote = OneDrive::getInstance(getOnedriveAccount($clientId))->pathToItemId($remote);
         $remote_id = $_remote['errno'] === 0 ? Arr::get($_remote, 'data.id') : exit('Remote Path Abnormal');
-        $response = OneDrive::getInstance(one_account())->createShareLink($remote_id);
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->createShareLink($remote_id);
         $response['errno'] === 0
             ? $this->info("Success! Direct Link:\n{$response['data']['redirect']}")
             : $this->warn("Failed!\n{$response['msg']} ");

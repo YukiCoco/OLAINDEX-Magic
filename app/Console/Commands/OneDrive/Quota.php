@@ -37,17 +37,9 @@ class Quota extends Command
      */
     public function handle()
     {
-        $this->call('od:refresh');
-        $headers = array_keys(is_array(one_info())
-            ? one_info() : []);
-        if (!$headers) {
-            $this->warn('Please try again later!');
-            exit;
-        }
-        $quota[] = one_info();
         $this->info(CoreConstants::LOGO);
-        $this->info('Account [' . setting('account_email') . ']');
-        $this->info('App Version  [' . setting('app_version') . ']');
-        $this->table($headers, $quota);
+        foreach (getOnedriveAccounts() as $key => $account) {
+            $this->info('ID：' . $account->id . '  账号：' . $account->account_email);
+        }
     }
 }

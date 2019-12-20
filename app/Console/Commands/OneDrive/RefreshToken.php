@@ -1,4 +1,12 @@
 <?php
+/*
+ * @Author: your name
+ * @Date: 2019-12-17 19:36:27
+ * @LastEditTime : 2019-12-20 17:47:43
+ * @LastEditors  : Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /onedrive/app/Console/Commands/OneDrive/RefreshToken.php
+ */
 
 namespace App\Console\Commands\OneDrive;
 
@@ -13,7 +21,7 @@ class RefreshToken extends Command
      *
      * @var string
      */
-    protected $signature = 'od:refresh';
+    protected $signature = 'od:refresh {clientId}';
 
     /**
      * The console command description.
@@ -37,14 +45,7 @@ class RefreshToken extends Command
      */
     public function handle()
     {
-        $expires = setting('access_token_expires', 0);
-        $expires = strtotime($expires);
-        $hasExpired = $expires - time() <= 0;
-        if (!$hasExpired) {
-            return;
-        }
-        $oauth = new OauthController();
-        $res = json_decode($oauth->refreshToken(false), true);
-        $res['code'] === 200 or exit('Refresh Token Error!');
+        $clientId = $this->argument('clientId');
+        refresh_token(getOnedriveAccount($clientId));
     }
 }

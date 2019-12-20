@@ -52,7 +52,6 @@ Options:
       --no-ansi         Disable ANSI output
   -n, --no-interaction  Do not ask any interactive question
   -v|vv|vvv, --verbose  Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
-
 Available commands:
 
   od:cache     Cache Dir
@@ -77,6 +76,7 @@ Available commands:
   od:upload    UploadFile File
   od:whereis   Find The Item's Remote Path
 
+  Magic版本：请使用od:info查看账号id，然后在命令后面加上id
 
 EOF;
 

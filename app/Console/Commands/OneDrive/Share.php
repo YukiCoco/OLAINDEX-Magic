@@ -13,7 +13,7 @@ class Share extends Command
      *
      * @var string
      */
-    protected $signature = 'od:share {remote : Remote Path}';
+    protected $signature = 'od:share {clientId : Onedrive Id} {remote : Remote Path}';
 
     /**
      * The console command description.
@@ -37,14 +37,15 @@ class Share extends Command
      */
     public function handle()
     {
-        $this->call('od:refresh');
+        $clientId = $this->argument('clientId');
+        refresh_token(getOnedriveAccount($clientId));
         $this->info('Please waiting...');
         $remote = $this->argument('remote');
         $_remote
-            = OneDrive::getInstance(one_account())->pathToItemId($remote);
+            = OneDrive::getInstance(getOnedriveAccount($clientId))->pathToItemId($remote);
         $remote_id = $_remote['errno'] === 0 ? Arr::get($_remote, 'data.id')
             : exit('Remote Path Abnormal');
-        $response = OneDrive::getInstance(one_account())->createShareLink($remote_id);
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->createShareLink($remote_id);
         if ($response['errno'] === 0) {
             $direct = str_replace(
                 '15/download.aspx',

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Console\Commands\OneDrive;
 
 use App\Service\OneDrive;
@@ -13,7 +12,7 @@ class WhereIs extends Command
      *
      * @var string
      */
-    protected $signature = 'od:whereis {id : Item ID}';
+    protected $signature = 'od:whereis {clientId : Onedrive Id} {id : Item ID}';
 
     /**
      * The description of the command.
@@ -37,9 +36,10 @@ class WhereIs extends Command
      */
     public function handle()
     {
-        $this->call('od:refresh');
         $id = $this->argument('id');
-        $response = OneDrive::getInstance(one_account())->itemIdToPath($id);
+        $clientId = $this->argument('clientId');
+        refresh_token(getOnedriveAccount($clientId));
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->itemIdToPath($id);
         if ($response['errno'] === 0) {
             $this->info(Arr::get($response, 'data.path'));
         } else {

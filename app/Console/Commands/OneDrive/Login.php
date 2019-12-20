@@ -18,7 +18,7 @@ class Login extends Command
      *
      * @var string
      */
-    protected $signature = 'od:login';
+    protected $signature = 'od:login {clientId : Onedrive Id}';
 
     /**
      * The console command description.
@@ -72,6 +72,7 @@ class Login extends Command
      */
     public function handle()
     {
+        $clientId = $this->argument('clientId');
         if (Tool::hasBind()) {
             $this->error('Already bind account');
             exit;
@@ -123,9 +124,9 @@ class Login extends Command
             'access_token_expires' => $expires,
         ];
         Setting::batchUpdate($data);
-        Tool::refreshAccount(one_account());
+        Tool::refreshAccount(getOnedriveAccount($clientId));
 
         $this->info('Login Success!');
-        $this->info('Account [' . one_account('account_email') . ']');
+        $this->info('Account [' . getOnedriveAccount($clientId,'account_email') . ']');
     }
 }

@@ -2,8 +2,8 @@
 /*
  * @Author: your name
  * @Date: 2019-12-19 00:03:57
- * @LastEditTime: 2019-12-19 18:47:15
- * @LastEditors: your name
+ * @LastEditTime : 2019-12-20 17:39:57
+ * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /onedrive/app/Http/Middleware/VerifyAccessToken.php
  */
@@ -33,17 +33,7 @@ class VerifyAccessToken
         }
         $onedriveAccounts = OnedriveAccount::all();
         foreach ($onedriveAccounts as $account) {
-            // $expires = $account->access_token_expires;
-            // $expires = strtotime($expires);
-            // $hasExpired = $expires - time() <= 0;
-            // if ($hasExpired) {
-            //     $current = url()->current();
-            //     Session::put('refresh_redirect', $current);
-            //     $oauth = new OauthController();
-
-            //     return $oauth->refreshToken(true,$account);
-            // }
-            refresh_token($account);
+            refresh_token($account->toArray());
         }
         return $next($request);
     }

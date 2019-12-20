@@ -13,6 +13,7 @@ class Download extends Command
      * @var string
      */
     protected $signature = 'od:download
+                            {clientId : Onedrive Id}
                             {remote? : Download Remote Path}
                             {--id= : Download Remote File ID}';
 
@@ -38,16 +39,17 @@ class Download extends Command
      */
     public function handle()
     {
-        $this->call('od:refresh');
         $remote = $this->argument('remote');
         $id = $this->option('id');
+        $clientId = $this->argument('clientId');
+        refresh_token(getOnedriveAccount($clientId));
         if ($id) {
-            $response = OneDrive::getInstance(one_account())->getItem($id);
+            $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getItem($id);
         } else {
             if (empty($remote)) {
                 exit('Parameters Missing!');
             }
-            $response = OneDrive::getInstance(one_account())->getItemByPath($remote);
+            $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getItemByPath($remote);
         }
         if ($response['errno'] === 0) {
             $download = $response['data']['@microsoft.graph.downloadUrl'] ??

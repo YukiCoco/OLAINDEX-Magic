@@ -15,6 +15,7 @@ class Find extends Command
      * @var string
      */
     protected $signature = 'od:find
+                            {clientId : Onedrive Id}
                             {keywords : Keywords}
                             {--id= : id}
                             {--remote=/ : Query Path}
@@ -44,15 +45,16 @@ class Find extends Command
     public function handle()
     {
         $this->info('请稍等...');
-        $this->call('od:refresh');
         $keywords = $this->argument('keywords');
         $remote = $this->option('remote');
         $offset = $this->option('offset');
         $length = $this->option('limit');
+        $clientId = $this->argument('clientId');
+        refresh_token(getOnedriveAccount($clientId));
         if ($id = $this->option('id')) {
-            $response = OneDrive::getInstance(one_account())->getItem($id);
+            $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getItem($id);
         } else {
-            $response = OneDrive::getInstance(one_account())->search($remote, $keywords);
+            $response = OneDrive::getInstance(getOnedriveAccount($clientId))->search($remote, $keywords);
         }
         $data = $response['errno'] === 0 ? $response['data'] : [];
         if (!$data) {
@@ -62,7 +64,7 @@ class Find extends Command
         if ($id = $this->option('id')) {
             $data = [$data];
         }
-        $data = $this->format($data);
+        $data = $this->format($data,$clientId);
         $items = array_slice($data, $offset, $length);
         $headers = [];
         $this->line('total '.count($items));
@@ -75,7 +77,7 @@ class Find extends Command
      * @return array
      * @throws \ErrorException
      */
-    public function format($data)
+    public function format($data,$clientId)
     {
         $list = [];
         foreach ($data as $item) {
@@ -87,7 +89,7 @@ class Find extends Command
                 : '1';
             $owner = Arr::get($item, 'createdBy.user.displayName');
             if ($id = $this->option('id')) {
-                $response = OneDrive::getInstance(one_account())->itemIdToPath($item['id']);
+                $response = OneDrive::getInstance(getOnedriveAccount($clientId))->itemIdToPath($item['id']);
                 $path = $response['errno'] === 0 ? $response['data']['path']
                     : 'Failed Fetch Path!';
                 $content = [

@@ -8,6 +8,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Artisan;
 use Cache;
+use Illuminate\Support\Facades\Artisan as FacadesArtisan;
+use Illuminate\Support\Facades\Cache as FacadesCache;
 
 class RefreshCache extends Command
 {
@@ -16,7 +18,7 @@ class RefreshCache extends Command
      *
      * @var string
      */
-    protected $signature = 'od:cache {path? : Target path to cache}';
+    protected $signature = 'od:cache {clientId : Onedrive Id} {path? : Target path to cache}';
 
     /**
      * The console command description.
@@ -53,8 +55,9 @@ class RefreshCache extends Command
      */
     public function getChildren($path)
     {
-        Artisan::call('od:refresh');
-        $response = OneDrive::getInstance(one_account())->getItemListByPath(
+        $clientId = $this->argument('clientId');
+        refresh_token(getOnedriveAccount($clientId));
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getItemListByPath(
             $path,
             '?select=id,eTag,name,size,lastModifiedDateTime,file,image,folder,'
             . 'parentReference,@microsoft.graph.downloadUrl&expand=thumbnails'
@@ -73,7 +76,7 @@ class RefreshCache extends Command
         $this->info($path);
         $data = $this->getChildren($path);
         if (is_array($data)) {
-            Cache::put(
+            FacadesCache::put(
                 'one:list:' . $path,
                 $data,
                 setting('expires')

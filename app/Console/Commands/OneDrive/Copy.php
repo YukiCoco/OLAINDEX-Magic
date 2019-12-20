@@ -14,6 +14,7 @@ class Copy extends Command
      * @var string
      */
     protected $signature = 'od:cp
+                            {clientId : Onedrive Id}
                             {origin : Origin Path}
                             {target : Target Path}';
 
@@ -40,22 +41,23 @@ class Copy extends Command
      */
     public function handle()
     {
-        $this->info('开始复制...');
-        $this->call('od:refresh');
         $origin = $this->argument('origin');
-        $_origin = OneDrive::getInstance(one_account())->pathToItemId($origin);
+        $clientId = $this->argument('clientId');
+        $this->info('开始复制...');
+        refresh_token(getOnedriveAccount($clientId));
+        $_origin = OneDrive::getInstance(getOnedriveAccount($clientId))->pathToItemId($origin);
         $origin_id = $_origin['errno'] === 0 ? Arr::get($_origin, 'data.id')
             : exit('Origin Path Abnormal');
         $target = $this->argument('target');
-        $_target = OneDrive::getInstance(one_account())->pathToItemId($target);
+        $_target = OneDrive::getInstance(getOnedriveAccount($clientId))->pathToItemId($target);
         $target_id = $_origin['errno'] === 0 ? Arr::get($_target, 'data.id')
             : exit('Target Path Abnormal');
-        $response = OneDrive::getInstance(one_account())->copy($origin_id, $target_id);
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->copy($origin_id, $target_id);
         if ($response['errno'] === 0) {
             $redirect = Arr::get($response, 'data.redirect');
             $done = false;
             while (!$done) {
-                $resp = OneDrive::getInstance(one_account())->request(
+                $resp = OneDrive::getInstance(getOnedriveAccount($clientId))->request(
                     'get',
                     $redirect
                 );

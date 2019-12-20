@@ -25,6 +25,7 @@ class ApiController extends Controller
      */
     public function imageUpload(Request $request)
     {
+        $clientId = $request->clientId ?: setting('main_client_id');
         $field = 'olaindex_img';
         if (!$request->hasFile($field)) {
             $data = ['errno' => 400, 'message' => '上传文件为空'];
@@ -52,7 +53,7 @@ class ApiController extends Controller
             $middleName = '/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . Str::random(8) . '/';
             $filePath = trim($hostingPath . $middleName . $file->getClientOriginalName(), '/');
             $remoteFilePath = Tool::getOriginPath($filePath); // 远程图片保存地址
-            $response = OneDrive::getInstance(one_account())->uploadByPath($remoteFilePath, $content);
+            $response = OneDrive::getInstance(getOnedriveAccount($clientId))->uploadByPath($remoteFilePath, $content);
             if ($response['errno'] === 0) {
                 $sign = $response['data']['id'] . '.' . encrypt($response['data']['eTag']);
                 $fileIdentifier = encrypt($sign);

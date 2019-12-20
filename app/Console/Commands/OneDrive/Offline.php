@@ -13,8 +13,10 @@ class Offline extends Command
      *
      * @var string
      */
-    protected $signature = 'od:offline {remote : Remote Path}
-                                    {url : Offline Url}';
+    protected $signature = 'od:offline
+                            {clientId : Onedrive Id}
+                            {remote : Remote Path}
+                            {url : Offline Url}';
 
     /**
      * The console command description.
@@ -41,13 +43,14 @@ class Offline extends Command
         $this->call('refresh:token');
         $remote = $this->argument('remote');
         $url = $this->argument('url');
-        $response = OneDrive::getInstance(one_account())->uploadUrl($remote, $url);
+        $clientId = $this->argument('clientId');
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->uploadUrl($remote, $url);
         if ($response['errno'] === 200) {
             $redirect = Arr::get($response, 'data.redirect');
             $this->info('progress link: '.$redirect);
             $done = false;
             while (!$done) {
-                $result = OneDrive::getInstance(one_account())->request('get', $redirect, false);
+                $result = OneDrive::getInstance(getOnedriveAccount($clientId))->request('get', $redirect, false);
                 $status = Arr::get($result, 'data.status');
                 if ($status === 'failed') {
                     $this->error(Arr::get($result, 'data.error.message'));

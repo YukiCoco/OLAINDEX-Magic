@@ -16,7 +16,8 @@ class ListItem extends Command
      * @var string
      */
     protected $signature = 'od:ls
-                           {remote? : Remote Path}
+                            {clientId : Onedrive Id}
+                            {remote? : Remote Path}
                             {--a|all : List All Info}
                             {--id= : ID}
                             {--offset=0 : Start}
@@ -41,17 +42,18 @@ class ListItem extends Command
 
     public function handle()
     {
-        $this->call('od:refresh');
         $remote = $this->argument('remote');
         $id = $this->option('id');
         $offset = $this->option('offset');
         $length = $this->option('limit');
+        $clientId = $this->argument('clientId');
+        refresh_token(getOnedriveAccount($clientId));
         if ($id) {
             $data = Cache::remember(
                 'one:list:id:'.$id,
                 setting('expires'),
-                static function () use ($id) {
-                    $response = OneDrive::getInstance(one_account())->getItemList($id);
+                static function () use ($id,$clientId) {
+                    $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getItemList($id);
 
                     return $response['errno'] === 0 ? $response['data'] : [];
                 }
@@ -60,8 +62,8 @@ class ListItem extends Command
             $data = Cache::remember(
                 'one:list:path:'.$remote,
                 setting('expires'),
-                static function () use ($remote) {
-                    $response = OneDrive::getInstance(one_account())->getItemListByPath($remote);
+                static function () use ($remote,$clientId) {
+                    $response = OneDrive::getInstance(getOnedriveAccount($clientId))->getItemListByPath($remote);
 
                     return $response['errno'] === 0 ? $response['data'] : [];
                 }

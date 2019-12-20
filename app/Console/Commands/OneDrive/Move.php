@@ -14,6 +14,7 @@ class Move extends Command
      * @var string
      */
     protected $signature = 'od:mv
+                            {clientId : Onedrive Id}
                             {origin : Origin Path}
                             {target : Target Path}
                             {--rename= : Rename}';
@@ -40,18 +41,19 @@ class Move extends Command
      */
     public function handle()
     {
+        $clientId = $this->argument('clientId');
         $this->info('开始移动...');
         $this->info('Please waiting...');
         $origin = $this->argument('origin');
-        $_origin = OneDrive::getInstance(one_account())->pathToItemId($origin);
+        $_origin = OneDrive::getInstance(getOnedriveAccount($clientId))->pathToItemId($origin);
         $origin_id = $_origin['errno'] === 0 ? Arr::get($_origin, 'data.id')
             : exit('Origin Path Abnormal');
         $target = $this->argument('target');
-        $_target = OneDrive::getInstance(one_account())->pathToItemId($target);
+        $_target = OneDrive::getInstance(getOnedriveAccount($clientId))->pathToItemId($target);
         $target_id = $_origin['errno'] === 0 ? Arr::get($_target, 'data.id')
             : exit('Target Path Abnormal');
         $rename = $this->option('rename') ?: '';
-        $response = OneDrive::getInstance(one_account())->move($origin_id, $target_id, $rename);
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->move($origin_id, $target_id, $rename);
         $response['errno'] === 0 ? $this->info('Move Success!')
             : $this->warn("Failed!\n{$response['msg']} ");
     }

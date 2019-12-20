@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Console\Commands\OneDrive;
-
 use App\Service\OneDrive;
 use Illuminate\Console\Command;
 
@@ -13,6 +11,7 @@ class Remove extends Command
      * @var string
      */
     protected $signature = 'od:rm
+                            {clientId : Onedrive Id}
                             {remote? : Remote path}
                             {--id= : ID}
                             {--f|force : Force Delete}';
@@ -40,7 +39,8 @@ class Remove extends Command
     public function handle()
     {
         $this->info('请稍等...');
-        $this->call('od:refresh');
+        $clientId = $this->argument('clientId');
+        refresh_token(getOnedriveAccount($clientId));
         if ($this->option('force')) {
             return $this->delete();
         }
@@ -54,6 +54,7 @@ class Remove extends Command
      */
     public function delete()
     {
+        $clientId = $this->argument('clientId');
         if ($this->option('id')) {
             $id = $this->option('id');
         } else {
@@ -63,7 +64,7 @@ class Remove extends Command
                 exit;
             }
             $id_response
-                = OneDrive::getInstance(one_account())->pathToItemId($remote);
+                = OneDrive::getInstance(getOnedriveAccount($clientId))->pathToItemId($remote);
             if ($id_response['errno'] === 0) {
                 $id = $id_response['data']['id'];
             } else {
@@ -71,7 +72,7 @@ class Remove extends Command
                 exit;
             }
         }
-        $response = OneDrive::getInstance(one_account())->delete($id);
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->delete($id);
         $this->call('cache:clear');
         $response['errno'] === 0 ? $this->info('Deleted')
             : $this->warn("Failed!\n{$response['msg']} ");

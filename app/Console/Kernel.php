@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
@@ -28,8 +27,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->command('od:refresh')->everyThirtyMinutes();
-        $schedule->command('od:cache')->everyFifteenMinutes();
+        //$schedule->command('od:refresh')->everyThirtyMinutes();
+        //$schedule->command('od:cache')->everyFifteenMinutes();
     }
 
     /**

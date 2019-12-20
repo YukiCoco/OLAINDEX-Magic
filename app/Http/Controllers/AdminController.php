@@ -159,7 +159,6 @@ class AdminController extends Controller
         } elseif($request->type == "update"){//更新名称
             OnedriveAccount::where('id',(int)$request->id)->update(['nick_name' => $request->nick_name]);
         }
-        refreshOnedriveAccounts();
         Tool::showMessage('修改成功！');
         return redirect()->route('admin.bind');
     }

@@ -13,6 +13,7 @@ class CreateFolder extends Command
      * @var string
      */
     protected $signature = 'od:mkdir
+                            {clientId : Onedrive Id}
                             {name : Folder Name}
                             {remote : Remote Path}';
 
@@ -38,10 +39,11 @@ class CreateFolder extends Command
      */
     public function handle()
     {
-        $this->call('od:refresh');
         $name = $this->argument('name');
         $remote = $this->argument('remote');
-        $response = OneDrive::getInstance(one_account())->mkdirByPath($name, $remote);
+        $clientId = $this->argument('clientId');
+        refresh_token(getOnedriveAccount($clientId));
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->mkdirByPath($name, $remote);
         $this->call('cache:clear');
         $response['errno'] === 0 ? $this->info('Folder Created!') : $this->warn("Failed!\n{$response['msg']} ");
     }

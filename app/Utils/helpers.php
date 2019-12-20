@@ -153,11 +153,12 @@ if (!function_exists('refresh_token')) {
      */
     function refresh_token($account)
     {
-        $id = $account->id;
-        $expires = $account->access_token_expires;
+        $id = $account['id'];
+        $expires = $account['access_token_expires'];
         $expires = strtotime($expires);
         $hasExpired = $expires - time() <= 0;
         if ($hasExpired) {
+            Log::debug('Token过期，重新获取');
             $oauth = new OauthController();
             $res = json_decode($oauth->refreshToken(false,getOnedriveAccount($id)), true);
             return $res['code'] === 200;
