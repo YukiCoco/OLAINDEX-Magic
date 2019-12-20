@@ -59,8 +59,9 @@
         copyText( '123456', function (){console.log('复制成功')})
         }
         @auth
-        function deleteItem($sign) {
+        function deleteItem(sign,fileName) {
             swal({
+                showLoaderOnConfirm : true,
                 title: '确定删除吗？',
                 text: "删除后无法恢复",
                 type: 'warning',
@@ -70,7 +71,30 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.value) {
-                    window.open('/file/delete/'+ '{{ $clientId }}/' + $sign, '_blank');
+                    var data = {
+                        '_token' : '{{csrf_token()}}',
+                        'clientId' : '{{ $clientId }}',
+                        'sign' : sign
+                    }
+                    $.post("{{ route('delete') }}", data,
+                        function (data, textStatus, jqXHR) {
+                            console.log(data);
+                            if(data.errno == 0){
+                                swal({
+                                    title: '删除成功',
+                                    type: 'success'
+                                });
+                                $("a[title='" + fileName + "']").parent().parent().parent().remove();
+                            } else{
+                                swal({
+                                    title: '删除失败',
+                                    type: 'error',
+                                    text: data.msg
+                                });
+                            }
+                        },
+                        "json"
+                    );
                 } else if (result.dismiss === swal.DismissReason.cancel) {
                     swal('已取消', '文件安全 :)', 'error');
                 }
@@ -268,7 +292,7 @@
                                        title="{{ $item['name'] }}"><i class="fa fa-folder-open"></i></a>&nbsp;&nbsp;
                                 @endif
                                 @auth
-                                    <a onclick="deleteItem('{{ encrypt($item['id'] . '.' . encrypt($item['eTag'])) }}')"
+                                    <a onclick="deleteItem('{{ encrypt($item['id'] . '.' . encrypt($item['eTag'])) }}','{{ $item['name'] }}')"
                                        href="javascript:void(0)"><i class="fa fa-trash"
                                                                     title="删除"></i></a>&nbsp;
                                     &nbsp;

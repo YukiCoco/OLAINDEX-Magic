@@ -29,7 +29,7 @@ Route::get('image', 'ImageController@index')->name('image');
 Route::post('image-upload', 'ImageController@upload')->name('image.upload');
 
 //删除
-Route::get('file/delete/{client_id?}/{sign}', 'ManageController@deleteItem')->name('delete');
+Route::any('file/delete/{client_id?}/{sign?}', 'ManageController@deleteItem')->name('delete');
 
 //后台设置管理
 Route::get('login', 'LoginController@showLoginForm')->name('login');

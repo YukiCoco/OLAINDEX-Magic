@@ -210,14 +210,14 @@ class ManageController extends Controller
      * @return Factory|View
      * @throws ErrorException
      */
-    public function deleteItem($sign)
+    public function deleteItem(Request $request)
     {
-        $client_id = request()->route()->parameter('clientId', setting('main_client_id'));
+        $sign = $request->sign;
+        $clientId = $request->clientId;
         try {
             $deCode = decrypt($sign);
         } catch (DecryptException $e) {
             Tool::showMessage($e->getMessage(), false);
-
             return view(config('olaindex.theme') . 'message');
         }
         $reCode = explode('.', $deCode);
@@ -226,15 +226,16 @@ class ManageController extends Controller
             $eTag = decrypt($reCode[1]);
         } catch (DecryptException $e) {
             Tool::showMessage($e->getMessage(), false);
-
             return view(config('olaindex.theme') . 'message');
         }
-        $response = OneDrive::getInstance(getOnedriveAccount($client_id))->delete($id, $eTag);
+        $response = OneDrive::getInstance(getOnedriveAccount($clientId))->delete($id, $eTag);
+        Artisan::call('cache:clear');
+        if($request->isMethod('post')){
+            return response()->json($response);
+        }
         $response['errno'] === 0
             ? Tool::showMessage('文件已删除')
             : Tool::showMessage('文件删除失败', false);
-        Artisan::call('cache:clear');
-
         return view(config('olaindex.theme') . 'message');
     }
 
