@@ -10,8 +10,10 @@
 魔改自：[https://github.com/WangNingkai/OLAINDEX](https://github.com/WangNingkai/OLAINDEX)
 （只不过是在大佬的作品上狗续貂尾罢了。
 
+演示站点：[https://magic.yukino.co/](https://magic.yukino.co/)
 ## 安装方法
 [https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md)
+
 
 **完善功能中，更新频繁，请直接拉取Master分支部署，欢迎提交issue，欢迎star**
 ## 魔改内容
@@ -25,6 +27,3 @@
     + 图床复制链接
     + Ajax删除文件
     + ......
-
-
-
