@@ -13,15 +13,18 @@
 ## 安装方法
 [https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md)
 
-**bug修复中，更新频繁，请直接拉取Master分支部署，欢迎提交issue，欢迎star**
+**完善功能中，更新频繁，请直接拉取Master分支部署，欢迎提交issue，欢迎star**
 ## 魔改内容
 
-+ 多Onedrive账户支持：
-    + 同时挂载多个Onedrive网盘
++ **多Onedrive账户支持：**
+    + 可同时挂载多个Onedrive网盘
     + 图床可选择上传到不同的盘区
-+ 一些小功能：
-    + 添加一键获取下载链接
-    + 图床复制按钮
+    + 多网盘命令支持
++ 一些小修复：
+    + 一键获取下载链接
+    + 图床复制链接
+    + Ajax删除文件
     + ......
+
 
 
