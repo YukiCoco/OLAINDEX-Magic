@@ -29,6 +29,12 @@ if (!function_exists('setting')) {
      */
     function setting($key = '', $default = '')
     {
+        if($key){
+            $setting = Setting::where('name',$key)->first();
+            if($setting){
+                return $setting->value;
+            }
+        }
         try {
             $setting = Setting::all()->toArray();
         } catch (Exception $e) {
@@ -43,14 +49,22 @@ if (!function_exists('setting')) {
             $data[$key] = '';
         }
         $setting = collect($data);
-        return $key ? $setting->get($key,$default) : $setting;
+        return $setting?:$default;
     }
 }
 
 if(!function_exists('setSetting')){
+
     function setSetting($key,$value){
-        DB::table('settings')->where('name', $key)->update(['value' => $value]);
-        \Cache::forget('setting'); //刷新
+        $setting = Setting::where('name',$key)->first();
+        if($setting){
+            $setting->value = $value;
+        } else{
+            $setting = new Setting;
+            $setting->name = $key;
+            $setting->value = $value;
+        }
+        $setting->save();
     }
 }
 
