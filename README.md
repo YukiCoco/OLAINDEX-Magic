@@ -16,7 +16,6 @@
 
 绑定&使用多账户：[https://yukino.co/archives/95.html](https://yukino.co/archives/95.html)
 
-
 **完善功能中，更新频繁，请直接拉取Master分支部署，欢迎提交issue，欢迎star**
 ## 魔改内容
 
@@ -29,3 +28,6 @@
     + 图床复制链接
     + Ajax删除文件
     + ......
+
+## 常见问题
+[https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/question.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/question.md)

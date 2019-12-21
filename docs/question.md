@@ -36,7 +36,7 @@
 
 - 不知情的情况，请勿修改文件
 
-- 其他情况，请在issue中提交最新log报错代码，位置 `storage/logs/laravel.log`\
+- 其他情况，请在issue中提交最新log报错代码，位置 `storage/logs`
 
 如
 ```
@@ -63,6 +63,12 @@
 #18 D:\\Work\\my\\my-project\\OLAINDEX\\artisan(37): Illuminate\\Foundation\\Console\\Kernel->handle(Object(Symfony\\Component\\Console\\Input\\ArgvInput), Object(Symfony\\Component\\Console\\Output\\ConsoleOutput))
 #19 {main}
 "} 
+```
+
+常见1 数据库没有读写权限： 设置database.sqlite为777
+
+```
+[2019-12-21 23:27:32] local.ERROR: SQLSTATE[HY000]: General error: 8 attempt to write a readonly database
 ```
 
 ## 依赖安装失败
