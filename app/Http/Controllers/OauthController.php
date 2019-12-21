@@ -86,7 +86,6 @@ class OauthController extends Controller
             Tool::showMessage('绑定成功', true);
             if(!Tool::hasConfig()){ //第一次绑定
                 setSetting('has_config','true');
-                Artisan::call('cache:clear');
             }
             return redirect()->route('admin.show');
         }

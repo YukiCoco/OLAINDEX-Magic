@@ -29,23 +29,20 @@ if (!function_exists('setting')) {
      */
     function setting($key = '', $default = '')
     {
-        $setting = \Cache::remember('setting', 60 * 60, static function () use($key) {
-            try {
-                $setting = Setting::all()->toArray();
-            } catch (Exception $e) {
-                return [];
-            }
-            $data = [];
-            foreach ($setting as $detail) {
-                $data[$detail['name']] = $detail['value'];
-            }
-            if(!array_key_exists($key,$data)){
-                setSetting($key,'');
-                $data[$key] = '';
-            }
-            return $data;
-        });
-        $setting = collect($setting);
+        try {
+            $setting = Setting::all()->toArray();
+        } catch (Exception $e) {
+            return [];
+        }
+        $data = [];
+        foreach ($setting as $detail) {
+            $data[$detail['name']] = $detail['value'];
+        }
+        if(!array_key_exists($key,$data)){
+            setSetting($key,'');
+            $data[$key] = '';
+        }
+        $setting = collect($data);
         return $key ? $setting->get($key,$default) : $setting;
     }
 }
