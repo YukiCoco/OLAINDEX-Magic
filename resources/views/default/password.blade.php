@@ -25,6 +25,7 @@
         <div class="card-body">
             <form action="{{ route('password') }}" method="post">
                 @csrf
+                <input type="hidden" name="currentUrl" value="{{ request()->url() }}">
                 <div class="form-group">
                     <label class="form-control-label" for="password">请输入密码</label>
                     <input type="password" class="form-control" id="password" name="password" required>

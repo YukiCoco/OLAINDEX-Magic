@@ -487,6 +487,7 @@ class IndexController extends Controller
      */
     public function handleEncrypt()
     {
+        $currentUrl = request()->get('currentUrl');
         $password = request()->get('password');
         $route = decrypt(request()->get('route'));
         $requestPath = decrypt(request()->get('requestPath'));
@@ -497,15 +498,13 @@ class IndexController extends Controller
             'expires' => time() + (int)$this->expires * 60, // 目录密码过期时间
         ];
         Session::put($encryptKey, $data);
-
         $encryptDir = Tool::handleEncryptItem(setting('encrypt_path'));
         $encryptPath = Str::after($encryptKey, 'password:');
         $directory_password = $encryptDir['p>' . $encryptPath];
         if (strcmp($password, $directory_password) === 0) {
-            return redirect()->route($route, ['query' => Tool::encodeUrl($requestPath)]);
+            return redirect($currentUrl);
         }
         Tool::showMessage('密码错误', false);
-
         return view(
             config('olaindex.theme') . 'password',
             compact('route', 'requestPath', 'encryptKey')

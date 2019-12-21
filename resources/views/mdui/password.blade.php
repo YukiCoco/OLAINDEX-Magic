@@ -23,6 +23,7 @@
         <div class="mdui-col-md-6 mdui-col-offset-md-3 mdui-p-a-3">
             <form action="{{ route('password') }}" method="post">
                 @csrf
+                <input type="hidden" name="clientId" value="{{ request()->route()->parameter('clientId') }}">
                 <div class="mdui-textfield mdui-textfield-floating-label">
                     <i class="mdui-icon material-icons">https</i>
                     <label class="mdui-textfield-label" for="password">此文件夹或文件受到保护，您需要提供访问密码才能查看</label>

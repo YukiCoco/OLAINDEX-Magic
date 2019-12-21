@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Middleware;
 
 use App\Utils\Tool;
@@ -26,9 +25,8 @@ class HandleHideDir
         if ($requestPath === '' || blank($hideDir)) {
             return $next($request);
         }
-        if (in_array($requestPath, $hideDir, false)) {
+        if (in_array($requestPath, $hideDir, false) && !auth()->check()) {
             Tool::showMessage('非法请求', false);
-
             return response()->view(config('olaindex.theme') . 'message');
         }
         return $next($request);

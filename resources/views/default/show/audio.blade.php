@@ -12,7 +12,7 @@
                 audio: [{
                     name: '{{ $file['name'] }}',
                     artist: '{{ $file['name'] }}',
-                    url: "{{ route('download',['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl($originPath))] }}",
+                    url: "{{ route('download',['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl($originPath)]) }}",
                     cover: 'cover.jpg'
                 }]
             });
