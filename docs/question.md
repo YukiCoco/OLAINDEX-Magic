@@ -65,7 +65,7 @@
 "} 
 ```
 
-常见1 数据库没有读写权限： 设置database.sqlite为777
+常见1 数据库没有读写权限： 设置database\database.sqlite 为 777 权限
 
 ```
 [2019-12-21 23:27:32] local.ERROR: SQLSTATE[HY000]: General error: 8 attempt to write a readonly database
