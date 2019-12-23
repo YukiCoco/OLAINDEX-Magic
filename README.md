@@ -10,7 +10,7 @@
 魔改自：[https://github.com/WangNingkai/OLAINDEX](https://github.com/WangNingkai/OLAINDEX)
 （只不过是在大佬的作品上狗续貂尾罢了。
 
-演示站点：[https://magic.yukino.co/](https://magic.yukino.co/) (维护中
+演示站点：[https://magic.yukino.co/](https://magic.yukino.co/)
 ## 安装方法
 原教程：[https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md)
 
