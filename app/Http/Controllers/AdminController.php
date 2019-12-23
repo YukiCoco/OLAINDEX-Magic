@@ -16,6 +16,11 @@ use Artisan;
 use Auth;
 use Hash;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\ProcessUpload;
+use App\Models\OfflineDlFile;
+use App\Utils\Aria2;
+use Exception;
+use Illuminate\Support\Arr;
 
 /**
  * 后台管理操作
@@ -189,5 +194,81 @@ class AdminController extends Controller
 
     public function usage(){
         return view(config('olaindex.theme') . 'admin.usage');
+    }
+
+    public function offlineDownload(Request $request){
+        $aria2Url = 'http://' . setting('rpc_url') . ':' . setting('rpc_port') . '/jsonrpc';
+        $aria2Token = 'token:' . setting('rpc_token');
+        $aria2 = new Aria2($aria2Url,$aria2Token);
+        if($request->isMethod('get')){
+            $offlineDlfiles = OfflineDlFile::all()->toArray();
+            foreach ($offlineDlfiles as $key => $offlineDlfile) {
+                $dlResponse = $aria2->tellStatus(
+                    $offlineDlfile['gid'],
+                    [
+                        'totalLength',
+                        'completedLength',
+                        'downloadSpeed'
+                    ]
+                    );
+                    Log::debug($dlResponse);
+                    if($aria2->error['error']){ //潜在的未找到gid
+                        Tool::showMessage('出现错误：'. $aria2->error['msg'],false);
+                        return redirect()->route('admin.offlineDownload');
+                    }
+                    if($dlResponse['result']['completedLength'] == 0){ //这里会出现计算得比西方记者还快 导致处以0
+                        $offlineDlfiles[$key]['progress'] = '0';
+                    }else{
+                    //计算速度
+                    $offlineDlfiles[$key]['progress'] = floor(($dlResponse['result']['completedLength'] / $dlResponse['result']['totalLength'])*100) . '%';
+                    }
+                    $offlineDlfiles[$key]['speed'] = Tool::convertSize($dlResponse['result']['downloadSpeed']);
+                    $offlineDlfiles[$key]['status'] = 'Downloading';
+                }
+            return view(config('olaindex.theme') . 'admin.offlineDownload',compact(['offlineDlfiles']));
+        }
+        //接受数据
+        $path = $request->path;
+        $url = $request->url;
+        $clientId = $request->client_id;
+        //下载
+        $dlResponse = $aria2->addUri([$url]);
+        Log::debug($dlResponse);
+        if($aria2->error['error']){
+            Tool::showMessage('出现错误：'. $aria2->error['msg'],false);
+            return redirect()->route('admin.offlineDownload');
+        }
+        //存入数据库
+        $offlineDlfile = new OfflineDlFile();
+        $offlineDlfile->name = basename($url);
+        $offlineDlfile->gid = $dlResponse['result'];
+        $offlineDlfile->upload_path = $path;
+        $offlineDlfile->client_id = $clientId;
+        $offlineDlfile->save();
+        Tool::showMessage('开始下载任务');
+        return redirect()->route('admin.offlineDownload');
+    }
+
+    public function offlineUpload(Request $request){
+        $token = $request->route()->parameter('token');
+        $gid = $request->route()->parameter('gid');
+        if($token != setting('rpc_token')){
+            return 'unauthrized';
+        }
+        $aria2Url = 'http://' . setting('rpc_url') . ':' . setting('rpc_port') . '/jsonrpc';
+        $aria2Token = 'token:' . setting('rpc_token');
+        $aria2 = new Aria2($aria2Url,$aria2Token);
+        $response = $aria2->getFiles($gid);
+        $offlineDlfile = OfflineDlFile::where('gid',$gid)->first();
+        foreach ($response['result'] as $key => $item) {
+            $payload = [
+                'local' => $item['path'],
+                'remote' => $offlineDlfile->upload_path,
+                'chuck' => 3276800,
+                'clientId' => $offlineDlfile->client_id,
+            ];
+            ProcessUpload::dispatch($payload);
+        }
+        return "start to upload";
     }
 }

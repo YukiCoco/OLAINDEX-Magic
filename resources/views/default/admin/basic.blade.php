@@ -218,6 +218,33 @@
                    value="{{ setting('third_access_token') }}">
             <span class="form-text text-danger">第三方接口token(图床、文件列表)</span>
         </div>
+        <div class="form-row">
+            <div class="form-group col-md-8">
+                <label for="rpc_url">RPC URL</label>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">http://</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Username" id="rpc_url" name="rpc_url" value="{{ setting('rpc_url') }}">
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">/jsonrpc</span>
+                      </div>
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="rpc_port">端口</label>
+                <input class="form-control" id="rpc_port" name="rpc_port" value="{{ setting('rpc_port') }}">
+            </div>
+            <div class="form-group col-md-12">
+                <label for="rpc_token">RPC 密钥</label>
+                <input class="form-control" id="rpc_token" name="rpc_token" value="{{ setting('rpc_token') }}">
+            </div>
+            <div class="form-group col-md-12">
+                <label for="local_dlpath">本地下载路径</label>
+                <input class="form-control" id="local_dlpath" name="local_dlpath" value="{{ setting('local_dlpath') }}">
+                <span class="form-text text-danger">务必确保有权限访问这个目录</span>
+            </div>
+        </div>
         <button type="submit" class="btn btn-primary">提交</button>
     </form>
 @stop

@@ -78,6 +78,11 @@
                     </div>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.offlineDownload') }}"><i
+                            class="fa fa-cloud-download"></i>
+                        离线下载 </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{ route('log-viewer::dashboard') }}" target="_blank"><i
                             class="fa fa-bug"></i>
                         调试日志 </a>

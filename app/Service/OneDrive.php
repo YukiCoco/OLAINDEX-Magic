@@ -595,11 +595,11 @@ class OneDrive
         $content_length = (($offset + $length) > $file_size) ? ($file_size
             - $offset) : $length;
         $end = (($offset + $length) > $file_size) ? ($file_size - 1)
-            : $offset + $content_length - 1;
+            : $offset + $content_length - 1; //注意这里是从0开始
         $content = $this->readFileContent($file, $offset, $length);
         $headers = [
             'Content-Length' => $content_length,
-            'Content-Range' => "bytes {$offset}-{$end}/{$file_size}",
+            'Content-Range' => "bytes {$offset}-{$end}/{$file_size}", //偏移量到末端
         ];
         $requestBody = $content;
         $response = $this->request(

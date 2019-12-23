@@ -56,6 +56,7 @@ Route::prefix('admin')->group(static function () {
     Route::get('newbind', 'AdminController@newBind')->name('admin.bind.newbind');
     Route::post('newbind', 'AdminController@createBind')->name('admin.bind.createNewbind');
     Route::get('usage', 'AdminController@usage')->name('admin.usage');
+    Route::any('offlinedl', 'AdminController@offlineDownload')->name('admin.offlineDownload');
     // 文件夹操作
     Route::prefix('folder')->group(static function () {
         Route::post('lock', 'ManageController@lockFolder')->name('admin.lock');

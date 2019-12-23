@@ -33,6 +33,8 @@ if (!function_exists('setting')) {
             $setting = Setting::where('name',$key)->first();
             if($setting){
                 return $setting->value;
+            } else{
+                return $default;
             }
         }
         try {
