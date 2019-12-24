@@ -1,9 +1,17 @@
 @extends('default.layouts.admin')
 @section('title','离线下载')
+@section('js')
+<script>
+function sendAction(element) {
+    $(element).parent().find("[name='action']").val($(element).attr('data-action-type'));
+    $(element).parent().submit();
+}
+</script>
+@stop
 @section('content')
 <div class="row">
     <div class="col-12">
-        <form action="{{ route('admin.offlineDownload')}}" method="post">
+        <form action="{{ route('admin.offlinedl.download')}}" method="post">
             @csrf
             <div class="form-group">
                 <select class="custom-select" name="client_id" required>
@@ -26,12 +34,22 @@
                 </div>
             </div>
         </form>
-        @foreach ($offlineDlfiles as $item)
+        @foreach ($filesInfo as $item)
         <div class="shadow-sm bg-light rounded border p-2 mt-3">
             <div class="row">
                 <div class="col-12">
                     <span class="text-primary">{{$item['name']}}</span>
-                    {{-- <a href="" class="float-right text-danger">删除任务</a> --}}
+                    <form action="{{ route('admin.offlinedl.file') }}" method="POST" class="float-right">
+                        @csrf
+                        <input type="hidden" name="gid" value="{{ $item['gid'] }}">
+                        <input type="hidden" name="action">
+                        <a href="javascript:void(0);" data-action-type="delete" class="float-right" onclick="sendAction(this)"><i class="fa fa-times-circle-o text-danger" aria-hidden="true"></i></a>
+                        @if($item['action'] == 'unpause')
+                            <a href="javascript:void(0);" data-action-type="{{ $item['action'] }}" class="float-right mr-2" onclick="sendAction(this)"><i class="fa fa-play-circle text-primary" aria-hidden="true"></i></a>
+                        @else
+                            <a href="javascript:void(0);" data-action-type="{{ $item['action'] }}" class="float-right mr-2" onclick="sendAction(this)"><i class="fa fa-pause-circle-o text-primary" aria-hidden="true"></i></a>
+                        @endif
+                    </form>
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
                             style="width: {{ $item['progress']}}">

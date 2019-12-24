@@ -56,8 +56,9 @@ Route::prefix('admin')->group(static function () {
     Route::get('newbind', 'AdminController@newBind')->name('admin.bind.newbind');
     Route::post('newbind', 'AdminController@createBind')->name('admin.bind.createNewbind');
     Route::get('usage', 'AdminController@usage')->name('admin.usage');
-    Route::any('offlinedl', 'AdminController@offlineDownload')->name('admin.offlineDownload');
-    Route::get('offlineupload/{token}/{gid}','AdminController@offlineUpload')->name('admin.offlineUpload');
+    Route::any('offlinedl', 'AdminController@offlineDownload')->name('admin.offlinedl.download');
+    Route::get('offlinedl/upload/{token}/{gid}','AdminController@offlineUpload')->name('admin.offlinedl.upload');
+    Route::post('offlinedl/file', 'AdminController@offlineDlFile')->name('admin.offlinedl.file');
     // 文件夹操作
     Route::prefix('folder')->group(static function () {
         Route::post('lock', 'ManageController@lockFolder')->name('admin.lock');

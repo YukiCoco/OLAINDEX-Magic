@@ -78,7 +78,7 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.offlineDownload') }}"><i
+                    <a class="nav-link" href="{{ route('admin.offlinedl.download') }}"><i
                             class="fa fa-cloud-download"></i>
                         离线下载 </a>
                 </li>

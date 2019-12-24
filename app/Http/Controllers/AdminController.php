@@ -205,49 +205,93 @@ class AdminController extends Controller
         $aria2Token = 'token:' . setting('rpc_token');
         //GET
         if ($request->isMethod('get')) {
+            $filesInfo = [];
             $offlineDlfiles = OfflineDlFile::all()->toArray();
             foreach ($offlineDlfiles as $key => $offlineDlfile) {
+                $newFile = array();
+                $newFile['name'] = $offlineDlfile['name'];
+                $newFile['action'] = 'disabled';
+                $newFile['gid'] = $offlineDlfile['gid'];
+                $newFile['status'] = $offlineDlfile['status'];
+                $newFile['progress'] = $offlineDlfile['progress'];
+                //上传项目
                 if ($offlineDlfile['status'] == 'uploading') {
-                    $offlineDlfiles[$key]['status'] = $offlineDlfile['status'];
-                    $offlineDlfiles[$key]['progress'] = $offlineDlfile['progress'];
-                    $offlineDlfiles[$key]['speed'] = $offlineDlfile['speed'];
-                    continue;
+                    $newFile['speed'] = $offlineDlfile['speed'];
+                    array_push($filesInfo,$newFile);
+                } else if
+                ($offlineDlfile['status'] == 'success'){
+                    $newFile['speed'] = 0;
+                    array_push($filesInfo,$newFile);
                 }
-                if($offlineDlfile['status'] == 'success'){
-                    $offlineDlfiles[$key]['status'] = $offlineDlfile['status'];
-                    $offlineDlfiles[$key]['progress'] = $offlineDlfile['progress'];
-                    $offlineDlfiles[$key]['speed'] = 0;
-                    continue;
-                }
-                $aria2 = new Aria2($aria2Url, $aria2Token);
-                $dlResponse = $aria2->tellStatus(
-                    $offlineDlfile['gid'],
-                    [
-                        'totalLength',
-                        'completedLength',
-                        'downloadSpeed'
-                    ]
-                );
-                if ($aria2->error['error']) {
-                    if (strstr($aria2->error['msg'], 'not found')) { //未找到gid
-                        $offlineDlfiles[$key]['status'] = 'not found';
-                        $offlineDlfiles[$key]['progress'] = '0%';
-                        $offlineDlfiles[$key]['speed'] = '0';
-                        continue;
-                    } else {
-                        Tool::showMessage('出现错误：' . $aria2->error['msg'], false);
-                        return redirect()->route('admin.basic');
-                    }
-                } else if ($dlResponse['result']['completedLength'] == 0) { //这里会出现计算得比西方记者还快 导致处以0
-                    $offlineDlfiles[$key]['progress'] = '0';
-                } else {
-                    //计算速度
-                    $offlineDlfiles[$key]['progress'] = floor(($dlResponse['result']['completedLength'] / $dlResponse['result']['totalLength']) * 100) . '%';
-                }
-                $offlineDlfiles[$key]['speed'] = Tool::convertSize($dlResponse['result']['downloadSpeed']);
-                $offlineDlfiles[$key]['status'] = 'Downloading';
             }
-            return view(config('olaindex.theme') . 'admin.offlineDownload', compact(['offlineDlfiles']));
+            //显示下载项
+            $aria2 = new Aria2($aria2Url, $aria2Token);
+            $dlResponse = $aria2->tellActive(
+                [
+                    'gid',
+                    'totalLength',
+                    'completedLength',
+                    'downloadSpeed',
+                    'bittorrent',
+                    'files'
+                ]
+            );
+            if ($aria2->error['error']) {
+                Tool::showMessage('出现错误：' . $aria2->error['msg'], false);
+                return redirect()->route('admin.basic');
+            }
+            foreach ($dlResponse['result'] as $key => $file) {
+                $newFile = array();
+                $newFile['gid'] = $file['gid'];
+                $newFile['speed'] = Tool::convertSize($file['downloadSpeed']);
+                if($file['totalLength'] != 0){ //算的比西方记者还快导致除以零
+                    $newFile['progress'] = floor(($file['completedLength'] / $file['totalLength']) * 100) . '%';
+                } else{
+                    $newFile['progress'] = '0%';
+                }
+                $newFile['status'] = 'downloading';
+                if(Arr::has($file,'bittorrent')){
+                    $newFile['name'] = $file['bittorrent']['info']['name']; //我死了
+                } else{
+                    $newFile['name'] = basename($file['files'][0]['path']);
+                }
+                $newFile['action'] = 'pause';
+                array_push($filesInfo,$newFile);
+            }
+            //显示暂停项
+            $dlResponse = $aria2->tellWaiting(
+                0,999,
+                [
+                    'gid',
+                    'totalLength',
+                    'completedLength',
+                    'bittorrent',
+                    'files'
+                ]
+            );
+            if ($aria2->error['error']) {
+                Tool::showMessage('出现错误：' . $aria2->error['msg'], false);
+                return redirect()->route('admin.basic');
+            }
+            foreach ($dlResponse['result'] as $key => $file) {
+                $newFile = array();
+                $newFile['gid'] = $file['gid'];
+                $newFile['speed'] = '0';
+                if($file['totalLength'] != 0){ //算的比西方记者还快导致除以零
+                    $newFile['progress'] = floor(($file['completedLength'] / $file['totalLength']) * 100) . '%';
+                } else{
+                    $newFile['progress'] = '0%';
+                }
+                $newFile['status'] = 'waiting';
+                if(Arr::has($file,'bittorrent')){
+                    $newFile['name'] = $file['bittorrent']['info']['name']; //我死了
+                } else{
+                    $newFile['name'] = basename($file['files'][0]['path']);
+                }
+                $newFile['action'] = 'unpause';
+                array_push($filesInfo,$newFile);
+            }
+            return view(config('olaindex.theme') . 'admin.offlineDownload', compact(['filesInfo']));
         }
         //POST
         $aria2 = new Aria2($aria2Url, $aria2Token);
@@ -260,7 +304,7 @@ class AdminController extends Controller
         Log::debug($dlResponse);
         if ($aria2->error['error']) {
             Tool::showMessage('出现错误：' . $aria2->error['msg'], false);
-            return redirect()->route('admin.offlineDownload');
+            return redirect()->route('admin.offlinedl.download');
         }
         //存入数据库
         $offlineDlfile = new OfflineDlFile();
@@ -271,7 +315,7 @@ class AdminController extends Controller
         $offlineDlfile->status = 'downloading';
         $offlineDlfile->save();
         Tool::showMessage('开始下载任务');
-        return redirect()->route('admin.offlineDownload');
+        return redirect()->route('admin.offlinedl.download');
     }
 
     public function offlineUpload(Request $request)
@@ -301,5 +345,26 @@ class AdminController extends Controller
         } else {
             return "gid not found";
         }
+    }
+
+    public function offlineDlFile(Request $request){
+        $action = $request->action;
+        $gid = $request->gid;
+        $aria2Url = 'http://' . setting('rpc_url') . ':' . setting('rpc_port') . '/jsonrpc';
+        $aria2Token = 'token:' . setting('rpc_token');
+        $aria2 = new Aria2($aria2Url, $aria2Token);
+        if($action == 'pause'){
+            $aria2->forcePause($gid);
+            $file = OfflineDlFile::where('gid',$gid)->first();
+            $file->status = 'paused';
+        } else if($action == 'unpause'){
+            $aria2->unpause($gid);
+            $file = OfflineDlFile::where('gid',$gid)->first();
+            $file->status = 'downloading';
+        } else if($action == 'delete'){
+            $aria2->forceRemove($gid);
+            $file = OfflineDlFile::where('gid',$gid)->delete();
+        }
+        return redirect()->route('admin.offlinedl.download');
     }
 }

@@ -77,6 +77,7 @@ class ProcessUpload implements ShouldQueue
         $uploadfile->status = 'success';
         $uploadfile->progress = '100%';
         $uploadfile->save();
+        unlink($local);
         return $response;
     }
 
@@ -141,6 +142,7 @@ class ProcessUpload implements ShouldQueue
                         sleep(10);
                     } else {
                         $uploadfile->error = 'Upload Failed!';
+                        Log::error("Upload Failed!");
                         OneDrive::getInstance($account)->deleteUploadSession($url);
                         break;
                     }
@@ -154,6 +156,7 @@ class ProcessUpload implements ShouldQueue
         }
         $uploadfile->status = 'success';
         $uploadfile->save();
+        unlink($local);
         return $response;
     }
 }
