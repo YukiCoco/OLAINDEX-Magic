@@ -27,7 +27,7 @@ function sendAction(element) {
                 <input type="text" class="form-control" placeholder="保存到网盘中的路径" name="path">
             </div>
             <div class="input-group mb-3 form-group">
-                <input type="text" name="url" class="form-control" placeholder="下载链接（支持磁力）"
+                <input type="text" name="url" class="form-control" placeholder="下载链接，支持：HTTP/FTP/SFTP/BitTorrent URIs"
                     aria-describedby="button-addon2">
                 <div class="input-group-append">
                     <button class="btn btn-primary" type="submmit" id="button-addon2">下载</button>

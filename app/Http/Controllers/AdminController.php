@@ -251,7 +251,12 @@ class AdminController extends Controller
                 }
                 $newFile['status'] = 'downloading';
                 if(Arr::has($file,'bittorrent')){
-                    $newFile['name'] = $file['bittorrent']['info']['name']; //我死了
+                    Log::debug($dlResponse);
+                    if(Arr::has($file['bittorrent'],'info')){ //磁链
+                        $newFile['name'] = $file['bittorrent']['info']['name'];
+                    } else{ //磁链
+                        $newFile['name'] = $file['files'][0]['path'];
+                    }
                 } else{
                     $newFile['name'] = basename($file['files'][0]['path']);
                 }
@@ -284,6 +289,7 @@ class AdminController extends Controller
                 }
                 $newFile['status'] = 'waiting';
                 if(Arr::has($file,'bittorrent')){
+                    Log::debug($dlResponse);
                     $newFile['name'] = $file['bittorrent']['info']['name']; //我死了
                 } else{
                     $newFile['name'] = basename($file['files'][0]['path']);
@@ -301,14 +307,17 @@ class AdminController extends Controller
         $clientId = $request->client_id;
         //下载
         $dlResponse = $aria2->addUri([$url]);
-        Log::debug($dlResponse);
         if ($aria2->error['error']) {
             Tool::showMessage('出现错误：' . $aria2->error['msg'], false);
             return redirect()->route('admin.offlinedl.download');
         }
         //存入数据库
         $offlineDlfile = new OfflineDlFile();
-        $offlineDlfile->name = basename($url);
+        if(strstr($url,'magnet:?xt=urn:btih:')){
+            $offlineDlfile->name = 'magnet';
+        } else{
+            $offlineDlfile->name = basename($url);
+        }
         $offlineDlfile->gid = $dlResponse['result'];
         $offlineDlfile->upload_path = $path;
         $offlineDlfile->client_id = $clientId;
@@ -328,6 +337,12 @@ class AdminController extends Controller
         $aria2Url = 'http://' . setting('rpc_url') . ':' . setting('rpc_port') . '/jsonrpc';
         $aria2Token = 'token:' . setting('rpc_token');
         $aria2 = new Aria2($aria2Url, $aria2Token);
+        $offlineDlfile = OfflineDlFile::where('gid',$gid)->first();
+        if($offlineDlfile->name == 'magnet'){
+            $response = $aria2->tellStatus($gid,['bittorrent']);
+            $offlineDlfile->name = $response['result']['bittorrent']['info']['name'];
+            $offlineDlfile->save();
+        }
         $response = $aria2->getFiles($gid);
         if (Arr::has($response, 'result')) {
             $offlineDlfile = OfflineDlFile::where('gid', $gid)->first();
