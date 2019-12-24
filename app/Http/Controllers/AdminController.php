@@ -35,7 +35,7 @@ class AdminController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['auth','verify.installation']);
+        $this->middleware(['auth', 'verify.installation'])->except('offlineUpload');
     }
 
     /**
@@ -159,20 +159,22 @@ class AdminController extends Controller
         if (!$request->isMethod('post')) {
             return view(config('olaindex.theme') . 'admin.bind');
         }
-        if($request->type == "delete"){ //解除绑定
-            OnedriveAccount::destroy((int)$request->id);
-        } elseif($request->type == "update"){//更新名称
-            OnedriveAccount::where('id',(int)$request->id)->update(['nick_name' => $request->nick_name]);
+        if ($request->type == "delete") { //解除绑定
+            OnedriveAccount::destroy((int) $request->id);
+        } elseif ($request->type == "update") { //更新名称
+            OnedriveAccount::where('id', (int) $request->id)->update(['nick_name' => $request->nick_name]);
         }
         Tool::showMessage('修改成功！');
         return redirect()->route('admin.bind');
     }
 
-    public function newBind(){
+    public function newBind()
+    {
         return view(config('olaindex.theme') . 'admin.newdrive');
     }
 
-    public function createBind(Request $request){
+    public function createBind(Request $request)
+    {
         $client_id = $request->get('client_id');
         $client_secret = $request->get('client_secret');
         $redirect_uri = $request->get('redirect_uri');
@@ -192,17 +194,32 @@ class AdminController extends Controller
         return redirect()->route('oauth');
     }
 
-    public function usage(){
+    public function usage()
+    {
         return view(config('olaindex.theme') . 'admin.usage');
     }
 
-    public function offlineDownload(Request $request){
+    public function offlineDownload(Request $request)
+    {
         $aria2Url = 'http://' . setting('rpc_url') . ':' . setting('rpc_port') . '/jsonrpc';
         $aria2Token = 'token:' . setting('rpc_token');
-        $aria2 = new Aria2($aria2Url,$aria2Token);
-        if($request->isMethod('get')){
+        //GET
+        if ($request->isMethod('get')) {
             $offlineDlfiles = OfflineDlFile::all()->toArray();
             foreach ($offlineDlfiles as $key => $offlineDlfile) {
+                if ($offlineDlfile['status'] == 'uploading') {
+                    $offlineDlfiles[$key]['status'] = $offlineDlfile['status'];
+                    $offlineDlfiles[$key]['progress'] = $offlineDlfile['progress'];
+                    $offlineDlfiles[$key]['speed'] = $offlineDlfile['speed'];
+                    continue;
+                }
+                if($offlineDlfile['status'] == 'success'){
+                    $offlineDlfiles[$key]['status'] = $offlineDlfile['status'];
+                    $offlineDlfiles[$key]['progress'] = $offlineDlfile['progress'];
+                    $offlineDlfiles[$key]['speed'] = 0;
+                    continue;
+                }
+                $aria2 = new Aria2($aria2Url, $aria2Token);
                 $dlResponse = $aria2->tellStatus(
                     $offlineDlfile['gid'],
                     [
@@ -210,23 +227,30 @@ class AdminController extends Controller
                         'completedLength',
                         'downloadSpeed'
                     ]
-                    );
-                    Log::debug($dlResponse);
-                    if($aria2->error['error']){ //潜在的未找到gid
-                        Tool::showMessage('出现错误：'. $aria2->error['msg'],false);
-                        return redirect()->route('admin.offlineDownload');
+                );
+                if ($aria2->error['error']) {
+                    if (strstr($aria2->error['msg'], 'not found')) { //未找到gid
+                        $offlineDlfiles[$key]['status'] = 'not found';
+                        $offlineDlfiles[$key]['progress'] = '0%';
+                        $offlineDlfiles[$key]['speed'] = '0';
+                        continue;
+                    } else {
+                        Tool::showMessage('出现错误：' . $aria2->error['msg'], false);
+                        return redirect()->route('admin.basic');
                     }
-                    if($dlResponse['result']['completedLength'] == 0){ //这里会出现计算得比西方记者还快 导致处以0
-                        $offlineDlfiles[$key]['progress'] = '0';
-                    }else{
+                } else if ($dlResponse['result']['completedLength'] == 0) { //这里会出现计算得比西方记者还快 导致处以0
+                    $offlineDlfiles[$key]['progress'] = '0';
+                } else {
                     //计算速度
-                    $offlineDlfiles[$key]['progress'] = floor(($dlResponse['result']['completedLength'] / $dlResponse['result']['totalLength'])*100) . '%';
-                    }
-                    $offlineDlfiles[$key]['speed'] = Tool::convertSize($dlResponse['result']['downloadSpeed']);
-                    $offlineDlfiles[$key]['status'] = 'Downloading';
+                    $offlineDlfiles[$key]['progress'] = floor(($dlResponse['result']['completedLength'] / $dlResponse['result']['totalLength']) * 100) . '%';
                 }
-            return view(config('olaindex.theme') . 'admin.offlineDownload',compact(['offlineDlfiles']));
+                $offlineDlfiles[$key]['speed'] = Tool::convertSize($dlResponse['result']['downloadSpeed']);
+                $offlineDlfiles[$key]['status'] = 'Downloading';
+            }
+            return view(config('olaindex.theme') . 'admin.offlineDownload', compact(['offlineDlfiles']));
         }
+        //POST
+        $aria2 = new Aria2($aria2Url, $aria2Token);
         //接受数据
         $path = $request->path;
         $url = $request->url;
@@ -234,8 +258,8 @@ class AdminController extends Controller
         //下载
         $dlResponse = $aria2->addUri([$url]);
         Log::debug($dlResponse);
-        if($aria2->error['error']){
-            Tool::showMessage('出现错误：'. $aria2->error['msg'],false);
+        if ($aria2->error['error']) {
+            Tool::showMessage('出现错误：' . $aria2->error['msg'], false);
             return redirect()->route('admin.offlineDownload');
         }
         //存入数据库
@@ -244,31 +268,38 @@ class AdminController extends Controller
         $offlineDlfile->gid = $dlResponse['result'];
         $offlineDlfile->upload_path = $path;
         $offlineDlfile->client_id = $clientId;
+        $offlineDlfile->status = 'downloading';
         $offlineDlfile->save();
         Tool::showMessage('开始下载任务');
         return redirect()->route('admin.offlineDownload');
     }
 
-    public function offlineUpload(Request $request){
+    public function offlineUpload(Request $request)
+    {
         $token = $request->route()->parameter('token');
         $gid = $request->route()->parameter('gid');
-        if($token != setting('rpc_token')){
+        if ($token != setting('rpc_token')) {
             return 'unauthrized';
         }
         $aria2Url = 'http://' . setting('rpc_url') . ':' . setting('rpc_port') . '/jsonrpc';
         $aria2Token = 'token:' . setting('rpc_token');
-        $aria2 = new Aria2($aria2Url,$aria2Token);
+        $aria2 = new Aria2($aria2Url, $aria2Token);
         $response = $aria2->getFiles($gid);
-        $offlineDlfile = OfflineDlFile::where('gid',$gid)->first();
-        foreach ($response['result'] as $key => $item) {
-            $payload = [
-                'local' => $item['path'],
-                'remote' => $offlineDlfile->upload_path,
-                'chuck' => 3276800,
-                'clientId' => $offlineDlfile->client_id,
-            ];
-            ProcessUpload::dispatch($payload);
+        if (Arr::has($response, 'result')) {
+            $offlineDlfile = OfflineDlFile::where('gid', $gid)->first();
+            foreach ($response['result'] as $key => $item) {
+                $payload = [
+                    'local' => $item['path'],
+                    'remote' => $offlineDlfile->upload_path,
+                    'chuck' => 3276800,
+                    'clientId' => $offlineDlfile->client_id,
+                    'gid' => $gid
+                ];
+                ProcessUpload::dispatch($payload);
+            }
+            return 'all files uploaded';
+        } else {
+            return "gid not found";
         }
-        return "start to upload";
     }
 }

@@ -16,7 +16,7 @@ class ProcessUpload implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $payload;
-    protected $response;
+    protected $result;
     /**
      * Create a new job instance.
      *
@@ -43,17 +43,19 @@ class ProcessUpload implements ShouldQueue
         $remote = $this->payload['remote'];
         $chuck = $this->payload['chuck']?: 3276800;
         $clientId = $this->payload['clientId'];
+        $gid = $this->payload['gid'];
         $account = getOnedriveAccount($clientId);
         if(!file_exists($local)){
-            $this->response['error'] = '文件不存在或无权限访问';
-            return $this->response; //也有可能是因为权限问题。
+            $this->result['errno'] = 1;
+            $this->result['message'] = '文件不存在或无权限访问';
+            return $this->result; //也有可能是因为权限问题。
         }
         refresh_token($account);
         $file_size = OneDrive::getInstance($account)->readFileSize($local);
         if ($file_size < 4194304) {
-            return $this->upload($local, $remote);
+            return $this->upload($local, $remote,$gid);
         }
-        return $this->uploadBySession($local, $remote, $chuck);
+        return $this->uploadBySession($local, $remote, $gid, $chuck);
     }
 
     /**
@@ -62,15 +64,16 @@ class ProcessUpload implements ShouldQueue
      *
      * @throws \ErrorException
      */
-    public function upload($local, $remote)
+    public function upload($local, $remote,$gid)
     {
-        $uploadfile = new OfflineDlFile();
+        $uploadfile = OfflineDlFile::where('gid',$gid)->first();
+        $uploadfile->status = 'uploading';
         $content = file_get_contents($local);
         $file_name = basename($local);
         $clientId = $this->payload['clientId'];
         $response = OneDrive::getInstance(getOnedriveAccount($clientId))->uploadByPath($remote . $file_name, $content);
         $uploadfile->name = basename($local);
-        $uploadfile->path = $local;
+        //$uploadfile->path = $local;
         $uploadfile->status = 'success';
         $uploadfile->progress = '100%';
         $uploadfile->save();
@@ -84,7 +87,7 @@ class ProcessUpload implements ShouldQueue
      *
      * @throws \ErrorException
      */
-    public function uploadBySession($local, $remote, $chuck = 3276800)
+    public function uploadBySession($local, $remote,$gid, $chuck = 3276800)
     {
         ini_set('memory_limit', '-1');
         $clientId = $this->payload['clientId'];
@@ -94,9 +97,9 @@ class ProcessUpload implements ShouldQueue
         $target_path = Tool::getAbsolutePath($remote);
         $url_response = OneDrive::getInstance($account)->createUploadSession($target_path . $file_name);
         //保存进度
-        $uploadfile = new OfflineDlFile();
+        $uploadfile = OfflineDlFile::where('gid',$gid)->first();
         $uploadfile->name = $file_name;
-        $uploadfile->path = $local;
+        //$uploadfile->path = $local;
 
         if ($url_response['errno'] === 0) {
             $url = Arr::get($url_response, 'data.uploadUrl');
@@ -104,9 +107,11 @@ class ProcessUpload implements ShouldQueue
             $uploadfile->error = $url_response['msg'];
             exit;
         }
+        $uploadfile->status = 'uploading';
         $done = false;
         $offset = 0;
         $length = $chuck;
+        $firstTime = gettimeofday()['sec'];
         while (!$done) {
             $retry = 0;
             $response = OneDrive::getInstance($account)->uploadToSession(
@@ -122,13 +127,14 @@ class ProcessUpload implements ShouldQueue
                     $offset = (int)$ranges[0];
                     $status = @floor($offset / $file_size * 100) . '%';
                     $uploadfile->progress = $status;
+                    $timeSpend = gettimeofday()['sec'] - $firstTime;
+                    $uploadfile->speed = Tool::convertSize(floor($offset / $timeSpend));
                     $done = false;
                 } elseif (!empty($data['@content.downloadUrl'])
                     || !empty($data['id'])
                 ) {
-                    //$this->info('Upload Success!');
                     $uploadfile->progress = '100%';
-                    $done = true;
+                    $done = true; //完成
                 } else {
                     $retry++;
                     if ($retry <= 3) {
@@ -140,11 +146,14 @@ class ProcessUpload implements ShouldQueue
                     }
                 }
             } else {
-                $uploadfile->error = 'Upload Failed!';
+                return $response;
                 OneDrive::getInstance($account)->deleteUploadSession($url);
                 break;
             }
             $uploadfile->save(); //保存任务
         }
+        $uploadfile->status = 'success';
+        $uploadfile->save();
+        return $response;
     }
 }

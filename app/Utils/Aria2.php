@@ -88,8 +88,8 @@ class Aria2
         $response = json_decode($response, 1);
         if(Arr::has($response,'error')){
             $this->error['error'] = true;
-            $this->error['code'] = $response['code'];
-            $this->error['msg'] = $response['message'];
+            $this->error['code'] = $response['error']['code'];
+            $this->error['msg'] = $response['error']['message'];
         }
         return $response;
     }
