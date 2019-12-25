@@ -47,7 +47,7 @@ chmod -R 777 $path
 curl $payload -m ${time}
 ```
 
-#### 修改 aria2.conf
+#### 3.修改 aria2.conf
 修改 aria2.conf 文件 on-download-complete（若无，请添加此项），去掉注释并修改为 success.sh 文件路径
 ```
 on-download-complete=/root/.aria2/success.sh
