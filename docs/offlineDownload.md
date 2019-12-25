@@ -15,9 +15,9 @@ OLAINDEX-Magic 与 Aria2 对接，支持下载 HTTP/FTP/SFTP/磁力链接，若�
 推荐使用[一键安装脚本](https://github.com/P3TERX/aria2.sh)，下面的教程基于此安装脚本
 
 将 url、端口和 token 填入后台配置中，注意：
-+ URL：应该被填写为 127.0.0.1，目前还不支持非本地文件上传。
-+ 端口：默认为6800
-+ token：密钥
++ URL: 应该被填写为 **127.0.0.1** ，目前还不支持非本地文件上传。
++ 端口: 默认为6800
++ token: 密钥
 
 ### 2.配置 aria2 文件
 
@@ -29,10 +29,10 @@ curl: try 'curl --help' or 'curl --manual' for more information
 
 #### 2.创建 success.sh
 安装后进入 root/.aria2 目录，创建 success.sh 文件，填入以下内容，并修改
-+ token:为 aria2 token
-+ url:为你的网站URL
-+ path:aria2 下载目录，**注意权限问题：**若填写为 root/Download ,需要确保 root 文件夹有读写权限。这意味着你应该执行命令：chmod 777 /root
-+ time:最长上传时间，可以保持默认，不修改
++ token: 为 aria2 token
++ url: 为你的网站URL
++ path: aria2 下载目录， **注意权限问题：** 若填写为 root/Download ,需要确保 root 文件夹有读写权限。这意味着你应该执行命令：chmod 777 /root
++ time: 最长上传时间，可以保持默认，不修改
 ```
 #!/bin/sh
 #修改下列内容
