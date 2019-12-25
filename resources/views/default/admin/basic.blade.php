@@ -225,7 +225,7 @@
                     <div class="input-group-prepend">
                       <span class="input-group-text">http://</span>
                     </div>
-                    <input type="text" class="form-control" placeholder="Username" id="rpc_url" name="rpc_url" value="{{ setting('rpc_url') }}">
+                    <input type="text" class="form-control" placeholder="Aria2 URL" id="rpc_url" name="rpc_url" value="{{ setting('rpc_url') }}">
                     <div class="input-group-append">
                         <span class="input-group-text" id="basic-addon2">/jsonrpc</span>
                       </div>

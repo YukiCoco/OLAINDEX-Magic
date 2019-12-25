@@ -225,7 +225,13 @@ class AdminController extends Controller
                 }
             }
             //显示下载项
-            $aria2 = new Aria2($aria2Url, $aria2Token);
+            try{
+                $aria2 = new Aria2($aria2Url, $aria2Token);
+            }catch(Exception $t){
+                Tool::showMessage('未配置Aria2或连接出错', false);
+                return redirect()->route('admin.basic');
+            }
+
             $dlResponse = $aria2->tellActive(
                 [
                     'gid',
