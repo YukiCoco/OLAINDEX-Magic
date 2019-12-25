@@ -221,7 +221,7 @@
         <div class="form-row">
             <div class="form-group col-md-8">
                 <label for="rpc_url">RPC URL</label>
-                <div class="input-group mb-3">
+                <div class="input-group">
                     <div class="input-group-prepend">
                       <span class="input-group-text">http://</span>
                     </div>
@@ -230,6 +230,7 @@
                         <span class="input-group-text" id="basic-addon2">/jsonrpc</span>
                       </div>
                 </div>
+                <span class="form-text text-danger">离线下载配置参考：<a target="_blank" href="https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/offlineDownload.md">离线下载配置</a></span>
             </div>
             <div class="form-group col-md-4">
                 <label for="rpc_port">端口</label>
