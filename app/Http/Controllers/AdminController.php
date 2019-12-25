@@ -358,6 +358,7 @@ class AdminController extends Controller
             //修改bt任务数据
             $offlineDlfile->status = 'downloading';
             $offlineDlfile->save();
+            $gid = $oldGid;
         } else{
             $offlineDlfile = OfflineDlFile::where('gid', $gid)->first();
         }
@@ -388,7 +389,7 @@ class AdminController extends Controller
                     'remote' => $offlineDlfile->upload_path,
                     'chuck' => 3276800,
                     'clientId' => $offlineDlfile->client_id,
-                    'gid' => $oldGid
+                    'gid' => $gid
                 ];
                 ProcessUpload::dispatch($payload);
             }
