@@ -16,7 +16,9 @@
 
 绑定&使用多账户：[https://yukino.co/archives/95.html](https://yukino.co/archives/95.html)
 
-**完善功能中，更新频繁，请直接拉取Master分支部署，欢迎提交issue，欢迎star**
+**此项目长期维护，请直接拉取 Master 分支部署，欢迎提交 issue，欢迎 star**
+
+
 ## 魔改内容
 
 + **多Onedrive账户支持：**
