@@ -1,5 +1,9 @@
 # 离线下载（出现部署错误，暂不可使用）
 
+## Warning
+
+由于 PHP 不能很好持久地持久化运行，测试过程中存在很多问题，此处废止。离线上传建议采用 [OneDriveUploader](https://github.com/MoeClub/OneList/tree/master/OneDriveUploader), 支持国际版与世纪互联。
+
 ## 简介
 
 **warning：测试功能，可能会出现各式问题，欢迎发issue**
