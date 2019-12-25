@@ -35,6 +35,7 @@ class Setting extends Model
     protected $casts = [
         'id' => 'int',
     ];
+    public $timestamps = false;
 
     /**
      * 如果 value 是 json 则转成数组

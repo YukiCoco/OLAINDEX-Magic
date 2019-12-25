@@ -78,6 +78,11 @@
                     </div>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.offlinedl.download') }}"><i
+                            class="fa fa-cloud-download"></i>
+                        离线下载 </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="{{ route('log-viewer::dashboard') }}" target="_blank"><i
                             class="fa fa-bug"></i>
                         调试日志 </a>
@@ -117,7 +122,7 @@
         <div class="row text-center">
             <div class="col-lg-12">
                 <p class="text-muted">
-                    Made by <a href="https://imwnk.cn">IMWNK</a>.
+                    Made by <a href="https://imwnk.cn">IMWNK</a>, Modified by <a href="https://yukino.co">Yukino</a>
                 </p>
             </div>
         </div>

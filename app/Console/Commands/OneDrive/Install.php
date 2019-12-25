@@ -40,7 +40,7 @@ class Install extends Command
     public function handle()
     {
         $this->info(CoreConstants::LOGO);
-        $this->info('OLAINDEX-Magic 站在巨人的肩膀上修改而来');
+        $this->info('OLAINDEX-Magic     站在巨人的肩膀上');
         $this->info('可以点个小星星吗：https://github.com/YukiCoco/OLAINDEX-Magic');
         // 初始化操作
         $this->call('cache:clear');

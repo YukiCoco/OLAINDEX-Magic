@@ -48,7 +48,7 @@ class UploadFile extends Command
         $chuck = $this->option('chuck');
         $this->clientId = $this->argument('clientId');
         if(!file_exists($local)){
-            return $this->warn('file does not exist!');
+            return $this->warn('file does not exist!'); //也有可能是因为权限问题。
         }
         refresh_token(getOnedriveAccount($this->clientId));
         $file_size = OneDrive::getInstance(getOnedriveAccount($this->clientId))->readFileSize($local);
