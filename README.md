@@ -23,6 +23,11 @@
     + 可同时挂载多个Onedrive网盘
     + 图床可选择上传到不同的盘区
     + 多网盘命令支持
+    + 同时支持国际版/世纪互联
++ **离线下载：**
+    + 对接 Aria2，支持 HTTP/FTP/SFTP/磁力链接/种子
+    + 选择下载到不同盘区的不同文件夹
+    + 配置方式：[https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/offlineDownload.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/offlineDownload.md)
 + 一些小修复：
     + 一键获取下载链接
     + 图床复制链接

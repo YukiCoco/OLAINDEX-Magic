@@ -239,11 +239,6 @@
                 <label for="rpc_token">RPC 密钥</label>
                 <input class="form-control" id="rpc_token" name="rpc_token" value="{{ setting('rpc_token') }}">
             </div>
-            <div class="form-group col-md-12">
-                <label for="local_dlpath">本地下载路径</label>
-                <input class="form-control" id="local_dlpath" name="local_dlpath" value="{{ setting('local_dlpath') }}">
-                <span class="form-text text-danger">务必确保有权限访问这个目录</span>
-            </div>
         </div>
         <button type="submit" class="btn btn-primary">提交</button>
     </form>

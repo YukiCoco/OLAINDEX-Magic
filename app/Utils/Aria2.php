@@ -93,4 +93,18 @@ class Aria2
         }
         return $response;
     }
+
+    public static function isBtTask($gid){
+        $aria2Url = 'http://' . setting('rpc_url') . ':' . setting('rpc_port') . '/jsonrpc';
+        $aria2Token = 'token:' . setting('rpc_token');
+        $aria2 = new Aria2($aria2Url, $aria2Token);
+        //判断一下是不是种子文件 需要传到aria2
+        $response = $aria2->tellStatus($gid,['following']);
+        //如果是链式传入 例如磁力或者metalink或者种子
+        if (Arr::has($response['result'], 'following')) {
+            return $response['result']['following'];
+        } else{
+            return false;
+        }
+    }
 }

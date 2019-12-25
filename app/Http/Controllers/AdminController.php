@@ -289,8 +289,11 @@ class AdminController extends Controller
                 }
                 $newFile['status'] = 'waiting';
                 if(Arr::has($file,'bittorrent')){
-                    Log::debug($dlResponse);
-                    $newFile['name'] = $file['bittorrent']['info']['name']; //我死了
+                    if(Arr::has($file['bittorrent'],'info')){
+                        Log::debug($dlResponse);
+                        $newFile['name'] = $file['bittorrent']['info']['name']; //我死了
+                    }
+                    $newFile['name'] = basename($file['files'][0]['path']);
                 } else{
                     $newFile['name'] = basename($file['files'][0]['path']);
                 }
@@ -318,6 +321,8 @@ class AdminController extends Controller
         } else{
             $offlineDlfile->name = basename($url);
         }
+        Log::debug($dlResponse);
+        Log::debug($aria2->tellStatus($dlResponse['result'],['following','gid','followedBy']));
         $offlineDlfile->gid = $dlResponse['result'];
         $offlineDlfile->upload_path = $path;
         $offlineDlfile->client_id = $clientId;
@@ -337,22 +342,48 @@ class AdminController extends Controller
         $aria2Url = 'http://' . setting('rpc_url') . ':' . setting('rpc_port') . '/jsonrpc';
         $aria2Token = 'token:' . setting('rpc_token');
         $aria2 = new Aria2($aria2Url, $aria2Token);
-        $offlineDlfile = OfflineDlFile::where('gid',$gid)->first();
-        if($offlineDlfile->name == 'magnet'){
-            $response = $aria2->tellStatus($gid,['bittorrent']);
+
+        //判断一下是不是种子文件 需要传到aria2
+        $oldGid = Aria2::isBtTask($gid);
+        //如果是链式传入 例如磁力或者metalink或者种子
+        if ($oldGid != false) {
+            $offlineDlfile = OfflineDlFile::where('gid', $oldGid)->first();
+            $response = $aria2->tellStatus($gid, ['bittorrent']);
             $offlineDlfile->name = $response['result']['bittorrent']['info']['name'];
+            //修改bt任务数据
+            $offlineDlfile->status = 'downloading';
             $offlineDlfile->save();
+        } else{
+            $offlineDlfile = OfflineDlFile::where('gid', $gid)->first();
         }
+
+        //圣诞节 写代码都白给
+
+        // //此处传入种子文件
+        // $offlineDlfile = OfflineDlFile::where('gid',$gid)->first();
+        // if(strstr($preFile['name'],'.torrent')){
+        //     return;
+        //     $btFile = fopen($preFile['path'],'r');
+        //     $btFileContent = base64_encode(fread($btFile,filesize($preFile['path'])));
+        //     fclose($btFile);
+        //     $response = $aria2->addTorrent($btFileContent);
+        //     $offlineDlfile->gid = $response['result'];
+        //     $response = $aria2->tellStatus($response['result'],['bittorrent']);
+        //     $offlineDlfile->name = $response['result']['bittorrent']['info']['name'];
+        //     //修改bt任务数据
+        //     $offlineDlfile->status = 'downloading';
+        //     $offlineDlfile->save();
+        //     return 'bt task added';
+        // }
         $response = $aria2->getFiles($gid);
         if (Arr::has($response, 'result')) {
-            $offlineDlfile = OfflineDlFile::where('gid', $gid)->first();
             foreach ($response['result'] as $key => $item) {
                 $payload = [
                     'local' => $item['path'],
                     'remote' => $offlineDlfile->upload_path,
                     'chuck' => 3276800,
                     'clientId' => $offlineDlfile->client_id,
-                    'gid' => $gid
+                    'gid' => $oldGid
                 ];
                 ProcessUpload::dispatch($payload);
             }
@@ -370,15 +401,16 @@ class AdminController extends Controller
         $aria2 = new Aria2($aria2Url, $aria2Token);
         if($action == 'pause'){
             $aria2->forcePause($gid);
-            $file = OfflineDlFile::where('gid',$gid)->first();
-            $file->status = 'paused';
         } else if($action == 'unpause'){
             $aria2->unpause($gid);
-            $file = OfflineDlFile::where('gid',$gid)->first();
-            $file->status = 'downloading';
         } else if($action == 'delete'){
             $aria2->forceRemove($gid);
-            $file = OfflineDlFile::where('gid',$gid)->delete();
+            $oldGid = Aria2::isBtTask($gid);
+            if($oldGid != false){ //BtTask
+                OfflineDlFile::where('gid',$oldGid)->delete();
+            } else{
+                OfflineDlFile::where('gid',$gid)->delete();
+            }
         }
         return redirect()->route('admin.offlinedl.download');
     }

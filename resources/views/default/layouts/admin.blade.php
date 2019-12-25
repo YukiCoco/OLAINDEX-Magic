@@ -122,7 +122,7 @@
         <div class="row text-center">
             <div class="col-lg-12">
                 <p class="text-muted">
-                    Made by <a href="https://imwnk.cn">IMWNK</a>.
+                    Made by <a href="https://imwnk.cn">IMWNK</a>, Modified by <a href="https://yukino.co">Yukino</a>
                 </p>
             </div>
         </div>
