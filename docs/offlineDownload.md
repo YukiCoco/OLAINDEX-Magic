@@ -8,10 +8,10 @@ OLAINDEX-Magic 与 Aria2 对接，支持下载 HTTP/FTP/SFTP/磁力链接，若�
 
 ## 开始配置
 
-### 旧版用户更新
+### 0.旧版用户更新
 拉取代码后请执行一次 php artisan migrate
 
-### 下载安装 aria2
+### 1.下载安装 aria2
 推荐使用一键安装脚本：[https://github.com/P3TERX/aria2.sh](https://github.com/P3TERX/aria2.sh)，下面的教程基于此安装脚本
 
 将 url、端口和 token 填入后台配置中，注意：
@@ -19,15 +19,15 @@ OLAINDEX-Magic 与 Aria2 对接，支持下载 HTTP/FTP/SFTP/磁力链接，若�
 + 端口：默认为6800
 + token：密钥
 
-### 配置 aria2 文件
+### 2.配置 aria2 文件
 
-#### 安装 curl
+#### 1.安装 curl
 请确保机器安装了 curl ，在终端输入 curl 应该会有如下提示，若无，请查阅资料并安装 curl
 ```
 curl: try 'curl --help' or 'curl --manual' for more information
 ```
 
-#### 创建 success.sh
+#### 2.创建 success.sh
 安装后进入 root/.aria2 目录，创建 success.sh 文件，填入以下内容，并修改
 + token:为 aria2 token
 + url:为你的网站URL
