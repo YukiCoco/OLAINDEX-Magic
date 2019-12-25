@@ -19,7 +19,7 @@ OLAINDEX-Magic 与 Aria2 对接，支持下载 HTTP/FTP/SFTP/磁力链接，若�
 + 端口: 默认为6800
 + token: 密钥
 
-### 2.配置 aria2 文件
+### 2.配置 aria2
 
 #### （1）安装 curl
 请确保机器安装了 curl ，在终端输入 curl 应该会有如下提示，若无，请查阅资料并安装 curl
