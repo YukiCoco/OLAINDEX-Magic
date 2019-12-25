@@ -12,7 +12,7 @@ OLAINDEX-Magic 与 Aria2 对接，支持下载 HTTP/FTP/SFTP/磁力链接，若�
 拉取代码后请执行一次 php artisan migrate
 
 ### 1.下载安装 aria2
-推荐使用一键安装脚本：[https://github.com/P3TERX/aria2.sh](https://github.com/P3TERX/aria2.sh)，下面的教程基于此安装脚本
+推荐使用[一键安装脚本](https://github.com/P3TERX/aria2.sh)，下面的教程基于此安装脚本
 
 将 url、端口和 token 填入后台配置中，注意：
 + URL：应该被填写为 127.0.0.1，目前还不支持非本地文件上传。
