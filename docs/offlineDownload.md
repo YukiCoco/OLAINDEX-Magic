@@ -2,7 +2,7 @@
 
 ## 简介
 
-OLAINDEX-Magic 与 Aria2 对接，支持下载 HTTP/FTP/SFTP/磁力链接，若下载种子文件会转换成目标文件进行下载，下载完毕并上传到 Onedrive 后将为您删除本地文件。
+OLAINDEX-Magic 与 Aria2 对接，支持下载 HTTP/FTP/SFTP/磁力链接，若下载种子文件会转换成目标文件进行下载。下载完毕后上传到 Onedrive 后将为您删除本地文件。
 
 **下载和上传：大流量消耗警告！** 这意味着你需要一个磁盘空间比较大的vps。（根据下载的文件自己决定
 
@@ -29,8 +29,8 @@ curl: try 'curl --help' or 'curl --manual' for more information
 
 #### 2.创建 success.sh
 安装后进入 root/.aria2 目录，创建 success.sh 文件，填入以下内容，并修改
-+ token: 为 aria2 token
-+ url: 为你的网站URL
++ token: aria2 token
++ url: 你的网站URL
 + path: aria2 下载目录， **注意权限问题：** 若填写为 root/Download ,需要确保 root 文件夹有读写权限。这意味着你应该执行命令：chmod 777 /root
 + time: 最长上传时间，可以保持默认，不修改
 ```
