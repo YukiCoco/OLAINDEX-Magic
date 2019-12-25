@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Log;
 use App\Jobs\ProcessUpload;
 use App\Models\OfflineDlFile;
 use App\Utils\Aria2;
-use Exception;
+use ErrorException;
 use Illuminate\Support\Arr;
 
 /**
@@ -227,21 +227,20 @@ class AdminController extends Controller
             //显示下载项
             try{
                 $aria2 = new Aria2($aria2Url, $aria2Token);
-            }catch(Exception $t){
-                Tool::showMessage('未配置Aria2或连接出错', false);
+                $dlResponse = $aria2->tellActive(
+                    [
+                        'gid',
+                        'totalLength',
+                        'completedLength',
+                        'downloadSpeed',
+                        'bittorrent',
+                        'files'
+                    ]
+                );
+            }catch(ErrorException $e){
+                Tool::showMessage('出现错误：未配置Aria2或连接出错', false);
                 return redirect()->route('admin.basic');
             }
-
-            $dlResponse = $aria2->tellActive(
-                [
-                    'gid',
-                    'totalLength',
-                    'completedLength',
-                    'downloadSpeed',
-                    'bittorrent',
-                    'files'
-                ]
-            );
             if ($aria2->error['error']) {
                 Tool::showMessage('出现错误：' . $aria2->error['msg'], false);
                 return redirect()->route('admin.basic');
