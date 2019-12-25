@@ -24,7 +24,7 @@
     + 图床可选择上传到不同的盘区
     + 多网盘命令支持
     + 同时支持国际版/世纪互联
-+ **离线下载（失效）：**
++ **离线下载（[已废止](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/offlineDownload.md)）：**
     + 对接 Aria2，支持 HTTP/FTP/SFTP/磁力链接/种子
     + 选择下载到不同盘区的不同文件夹
     + 配置方式：[https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/offlineDownload.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/offlineDownload.md)
