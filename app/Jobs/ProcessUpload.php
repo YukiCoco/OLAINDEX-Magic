@@ -10,6 +10,7 @@ use App\Service\OneDrive;
 use Illuminate\Support\Arr;
 use App\Utils\Tool;
 use App\Models\OfflineDlFile;
+use Illuminate\Support\Facades\Log;
 
 class ProcessUpload implements ShouldQueue
 {
