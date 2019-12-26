@@ -1,8 +1,8 @@
-# 离线下载（废止）
+# 离线下载（待更新）
 
 ## Warning
 
-由于 PHP 不能很好地持久化运行，测试过程中存在很多问题，此处废止。离线上传建议采用 [OneDriveUploader](https://github.com/MoeClub/OneList/tree/master/OneDriveUploader), 支持国际版与世纪互联。
+正在重写。
 
 ## 简介
 
