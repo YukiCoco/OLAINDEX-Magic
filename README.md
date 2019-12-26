@@ -31,7 +31,7 @@
     + 选择下载到不同盘区的不同文件夹
     + 配置方式：[https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/offlineDownload.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/offlineDownload.md)
 + 一些小修复：
-    + 一键获取下载链接
+    + 一键获取所有下载链接（配合[AriaNg](https://github.com/mayswind/AriaNg)可下载所有文件）
     + 图床复制链接
     + Ajax删除文件
     + ......
