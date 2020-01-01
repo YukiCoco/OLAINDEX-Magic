@@ -102,12 +102,12 @@ if (Str::contains(config('app.url'), ['localhost', 'dev.ningkai.wang'])) {
     });
 }
 
+// 首页索引
+Route::get('/', 'IndexController@home');
 
 $showOriginPath = setting('origin_path', 1);
 
 if (!$showOriginPath) {
-    // 索引
-    Route::get('/', 'IndexController@home');
 
     //列表
     Route::prefix('home')->group(static function () {
@@ -132,17 +132,17 @@ if (!$showOriginPath) {
         ->name('view');
 } else {
     //展示
-    Route::get('s/{query}', 'IndexController@show')
+    Route::get('s/{clientId?}/{query}', 'IndexController@show')
         ->where('query', '.*')
         ->name('show');
     // 下载
-    Route::get('d/{query?}', 'IndexController@download')
+    Route::get('d/{clientId?}/{query}', 'IndexController@download')
         ->where('query', '.*')
         ->name('download');
     //看图
-    Route::get('v/{query?}', 'IndexController@download')
+    Route::get('v/{clientId?}/{query}', 'IndexController@download')
         ->where('query', '.*')
         ->name('view');
 
-    Route::get('{query?}', 'IndexController@list')->where('query', '.*')->name('home');
+    Route::get('{clientId?}/{query?}', 'IndexController@list')->where('query', '.*')->name('home');
 }
