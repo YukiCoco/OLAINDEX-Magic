@@ -85,8 +85,8 @@ Route::prefix('admin')->group(static function () {
             ->name('admin.share.delete');
     });
     // 离线上传
-    Route::post('url/upload', 'ManageController@uploadUrl')
-        ->name('admin.url.upload');
+    // Route::post('url/upload', 'ManageController@uploadUrl')
+    //     ->name('admin.url.upload');
 });
 
 if (Str::contains(config('app.url'), ['localhost', 'dev.ningkai.wang'])) {

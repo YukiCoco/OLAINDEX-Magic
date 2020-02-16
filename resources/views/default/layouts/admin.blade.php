@@ -26,8 +26,7 @@
                 'move': '{{ route('admin.move') }}/' + clientId,
                 'path2id': '{{ route('admin.path2id') }}/' + clientId,
                 'share': '{{ route('admin.share') }}/' + clientId,
-                'delete_share': '{{ route('admin.share.delete') }}/' + clientId,
-                'upload_url': '{{ route('admin.url.upload') }}/' + clientId
+                'delete_share': '{{ route('admin.share.delete') }}/' + clientId
             },
             '_token': '{{ csrf_token() }}',
         };
@@ -76,11 +75,6 @@
                         <a class="dropdown-item" href="{{ route('admin.cache.refresh') }}"
                            onclick="swal('正在刷新缓存，请稍等');">刷新缓存 </a>
                     </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.offlinedl.download') }}"><i
-                            class="fa fa-cloud-download"></i>
-                        离线下载 </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('log-viewer::dashboard') }}" target="_blank"><i
