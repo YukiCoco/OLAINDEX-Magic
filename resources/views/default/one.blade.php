@@ -59,10 +59,6 @@
         if(callback) {callback(text)}
         }
 
-        // 点击按钮调用复制
-        document.getElementById('btn').onclick = function (){
-        copyText( '123456', function (){console.log('复制成功')})
-        }
         @auth
         function deleteItem(sign,fileName) {
             swal({

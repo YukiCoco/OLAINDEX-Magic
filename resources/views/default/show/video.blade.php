@@ -72,7 +72,6 @@
 					        SubtitlesOctopusOnLoad();
 				        }
 			        })
-			        dp.video.load();
 		        }
 	        });
         }
