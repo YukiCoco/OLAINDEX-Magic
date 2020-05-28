@@ -4,7 +4,7 @@
 /storage/*.key
 /public/favicon.ico
 /vendor
-# /.idea
+/.idea
 /.vscode
 # /.vagrant
 # Homestead.json
