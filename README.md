@@ -14,7 +14,7 @@
 ## 安装方法
 原教程：[https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md](https://github.com/YukiCoco/OLAINDEX-Magic/blob/master/docs/install.md)
 
-绑定&使用多账户：[https://yukino.co/archives/95.html](https://yukino.co/archives/95.html)
+绑定&使用多账户：[https://neko.re/archives/95.html](https://yukino.co/archives/95.html)
 
 **此项目长期维护，请直接拉取 Master 分支部署，欢迎提交 issue，欢迎 star**
 
