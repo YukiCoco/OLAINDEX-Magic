@@ -35,14 +35,19 @@
             links += "{{ route('download', ['clientId' => $clientId,'query' => \App\Utils\Tool::encodeUrl($originPath ? $originPath.'/'.$item['name'] : $item['name'])]) }}" +'\r\n';
             @endif
             @endforeach
-            copyText(links, function () {
-                Swal({
-                    type: "success",
-                    text: "已复制到剪贴板！"
-                })
-             })
+            copyBase(links)
         }
         // 复制的方法
+        function copyBase(text) {
+            copyText(text, function () {
+                Swal({
+                    type: "success",
+                    title: "已复制到剪贴板！",
+                    showConfirmButton: false,
+                    timer: 1000
+                })
+            })
+        }
         function copyText(text, callback){ // text: 要复制的内容， callback: 回调
         var tag = document.createElement('textarea');
         tag.setAttribute('id', 'cp_hgz_input');
@@ -54,10 +59,6 @@
         if(callback) {callback(text)}
         }
 
-        // 点击按钮调用复制
-        document.getElementById('btn').onclick = function (){
-        copyText( '123456', function (){console.log('复制成功')})
-        }
         @auth
         function deleteItem(sign,fileName) {
             swal({
@@ -278,6 +279,9 @@
                                            data-content="<img src='{{  \Illuminate\Support\Arr::get($item,'thumbnails.0.small.url','') }}' alt='{{ $item['name'] }}' class='img-fluid'>"
                                            class="view"><i
                                                 class="fa fa-eye"></i></a>&nbsp;&nbsp;
+                                    @endif
+                                    @if($item['ext'] == 'ass')
+                                        <a onclick="copyBase('{{$item['@microsoft.graph.downloadUrl']}}')"><i class="fa fa-clipboard"></i></a>&nbsp;&nbsp;
                                     @endif
                                     @if(Auth::user() && \App\Utils\Tool::canEdit($item) )
                                         <a href="{{ route('admin.file.update',['clientId' => $clientId,'id' => $item['id']]) }}"><i
